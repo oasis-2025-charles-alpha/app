@@ -20,3 +20,14 @@ function Head() {
 }
 
 export default Head;
+
+
+
+def to_json(self):
+return {
+    "id": self.id,
+    "courseSubject": self.course_subject,
+    "courseNumber": self.course_number,
+    "professorFname": self.professor_fname,
+    "professorLname": self.professor_lname
+}

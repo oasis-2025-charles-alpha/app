@@ -1,12 +1,17 @@
 import './App.css'
-import FilterBar from './components/FilterBar'
-import Head from './Head'
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Home from './pages/Home';
+import Sell from './pages/Sell';
 
 function App() {
   return (
     <>
-      <Head />
-      <FilterBar />
+      <Router>
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='sell' element={<Sell />} />
+        </Routes>
+      </Router>
     </>
   )
 }
