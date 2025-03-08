@@ -22,8 +22,8 @@ function FilterBar({ onSortChange }) {
                     <label htmlFor="good">Good</label>
                 </div>
                 <div>
-                    <input type="checkbox" id="barley-used" name="barley-used" value="barley-used" />
-                    <label htmlFor="barley-used">Barley Used</label>
+                    <input type="checkbox" id="barely-used" name="barely-used" value="barely-used" />
+                    <label htmlFor="barely-used">Barely Used</label>
                 </div>
                 <div>
                     <input type="checkbox" id="well-worn" name="well-worn" value="well-worn" />
