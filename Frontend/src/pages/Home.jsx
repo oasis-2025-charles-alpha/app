@@ -38,6 +38,13 @@ function Home() {
         
         return matchesCheckbox && matchesSearch;
     });
+
+    // Apply sorting
+    if (sortType === 'high-low') {
+        filteredBooks.sort((a, b) => b.price - a.price);
+    } else if (sortType === 'low-high') {
+        filteredBooks.sort((a, b) => a.price - b.price);
+    }
         
         setDisplayedBooks(filteredBooks);
     }, [originalBooks, selectedConditions, conditionSearch, sortType]);
