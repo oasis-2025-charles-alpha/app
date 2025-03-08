@@ -1,7 +1,81 @@
 .main-container {
     display: flex;
-    gap: 20px;
+    height: calc(100vh - 80); /* Adjust based on header height */
+    overflow: hidden;
+}
 
+.book-list-section {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.book-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-2px);
+}
+
+.book-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.book-details {
+    padding: 1rem;
+}
+
+.book-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #2d3748;
+}
+
+.book-author {
+    color: #718096;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.price-condition {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.book-price {
+    font-weight: 700;
+    color: #2b6cb0;
+}
+
+.book-condition {
+    font-size: 0.8rem;
+    background-color: #f7fafc;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    color: #4a5568;
+}
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding: 1rem;
+    min-height: min-content; /* Important for proper scrolling */
 }
 
 .filter-section {
@@ -9,12 +83,14 @@
     border-right: 2px solid #ddd; /* This creates the vertical line */
     padding-right: 20px;
     height: 100vh; /* line height base on header height */
-    
+    overflow-y: auto;
 }
 
 .book-list-section {
     flex: 1;
     padding-left: 20px;
+    overflow-y: auto;
+    height: 100%;
 }
 
 /* Filter Bar Container */
