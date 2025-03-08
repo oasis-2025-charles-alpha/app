@@ -1,0 +1,133 @@
+/* Header Styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Left side grouping */
+header > nav:first-child {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    width: 60%;
+}
+
+#search-form {
+    margin-left: auto; /* Pushes search to the right within its container */
+    width: 400px;
+}
+
+/* Right side grouping */
+header > nav:last-child {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-left: auto; /* Pushes entire group to far right */
+}
+
+/* Search Bar Positioning */
+.search-bar {
+    width: 100%;
+    padding: 0.6rem 1.2rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 24px;
+    /* existing transitions */
+}
+
+/* Login Button Positioning */
+.login-btn {
+    order: 2; /* Makes login appear after user-actions */
+    margin-left: 1.5rem;
+}
+
+/* User Actions Group */
+.user-actions {
+    order: 1;
+    display: flex;
+    gap: 1rem;
+}
+
+/* Logo Styles */
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.logo:hover {
+    color: #4a5568;
+}
+
+/* Search Bar Styles */
+#search-form {
+    margin-left: 2rem;
+}
+
+.search-bar {
+    padding: 0.6rem 1.2rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 24px;
+    width: 400px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.search-bar:focus {
+    outline: none;
+    border-color: #cbd5e0;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+/* Right Navigation Styles */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.login-btn {
+    background-color: transparent;
+    color: #2d3748;
+    padding: 0.5rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 24px;
+    transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+    background-color: #f7fafc;
+    border-color: #cbd5e0;
+}
+
+.likes-btn, .cart-btn {
+    background-color: transparent;
+    color: #2d3748;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.likes-btn:hover, .cart-btn:hover {
+    color: #4a5568;
+    transform: translateY(-1px);
+}
+
+/* Icon Styles (you might want to add icons later) */
+.likes-btn::before {
+    content: '♥';
+}
+
+.cart-btn::before {
+    content: '🛒';
+}

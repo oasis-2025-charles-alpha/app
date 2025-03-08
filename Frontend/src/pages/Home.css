@@ -9,9 +9,73 @@
     border-right: 2px solid #ddd; /* This creates the vertical line */
     padding-right: 20px;
     height: 100vh; /* line height base on header height */
+    
 }
 
 .book-list-section {
     flex: 1;
     padding-left: 20px;
+}
+
+/* Filter Bar Container */
+.filters-container {
+    width: 250px;
+    padding-right: 20px;
+}
+
+/* Price Filter Section */
+.price-filter {
+    margin-bottom: 2rem;
+}
+
+.price-filter nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Condition Filter Section */
+.condition-filter {
+    margin: 2rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.condition-filter label {
+    display: block;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.condition-filter div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+/* College Filter Section */
+.college-filter {
+    margin-top: 2rem;
+}
+
+.college-filter label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.college-filter select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Filter Section Headings */
+.filter-section h3 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #333;
 }

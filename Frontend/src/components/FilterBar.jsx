@@ -1,37 +1,40 @@
 function FilterBar({ onSortChange }) {
     return (
-        <div className="price-filter">
-            <nav>
-                <button
-                    onClick={() => onSortChange('high-low')}
-                    className="sort-option"
-                >
-                    Price: High to Low
-                </button>
-                <button
-                    onClick={() => onSortChange('low-high')}
-                    className="sort-option"
-                >
-                    Price: Low to High
-                </button>
-            </nav>
-            <div className="condition-filter">
-                <label>Condition:</label>
-                <input type="checkbox" name="good" value="good" onChange={(e) => onSortChange(e.target.value)} />
-                <span>Good</span>
-                <input type="checkbox" name="barley-used" value="barley-used" onChange={(e) => onSortChange(e.target.value)} />
-                <span>Barley Used</span>
-                <input type="checkbox" name="well-worn" value="well-worn" onChange={(e) => onSortChange(e.target.value)} />
-                <span>Well-Worn</span>
+        <div className="filter-container">
+            {/* Price Sorting Section */}
+            <div className="price-filter">
+                <h3>Price</h3>
+                <nav>
+                    <button onClick={() => onSortChange('high-low')}>
+                        Price: High to Low
+                    </button>
+                    <button onClick={() => onSortChange('low-high')}>
+                        Price: Low to High
+                    </button>
+                </nav>
             </div>
 
-            {/* Added a new select element for college filtering */}
+            {/* Condition Filter Section */}
+            <div className="condition-filter">
+                <h3>Condition</h3>
+                <div>
+                    <input type="checkbox" id="good" name="good" value="good" />
+                    <label htmlFor="good">Good</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="barley-used" name="barley-used" value="barley-used" />
+                    <label htmlFor="barley-used">Barley Used</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="well-worn" name="well-worn" value="well-worn" />
+                    <label htmlFor="well-worn">Well-Worn</label>
+                </div>
+            </div>
+
+            {/* College Filter Section */}
             <div className="college-filter">
-                <label>College:</label>
-                <select
-                    className="college-option"
-                    onChange={(e) => onSortChange(e.target.value)}
-                >
+                <h3>College</h3>
+                <select onChange={(e) => onSortChange(e.target.value)}>
                     <option value="">All Colleges</option>
                     <option value="Khoury College">Khoury College</option>
                     <option value="School of Law">School of Law</option>
