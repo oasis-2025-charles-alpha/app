@@ -5,8 +5,17 @@ import "./Home.css";
 function Home() {
     return <>
         <Head />
-        <FilterBar />
+        <div className="main-container">
+            {/*vertical line */}
+            <div className="filter-section">
+                <FilterBar />
+            </div>
+            <div className="book-list-section">
+                {/* Book listings will go here */}
+            </div>
+        </div>
     </>
 }
 
 export default Home;    
+
