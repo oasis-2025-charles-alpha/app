@@ -117,14 +117,7 @@
     border-right: 2px solid #ddd; /* This creates the vertical line */
     padding-right: 20px;
     height: 100vh; /* line height base on header height */
-    overflow-y: auto;
-}
-
-.book-list-section {
-    flex: 1;
-    padding-left: 20px;
-    overflow-y: auto;
-    height: 100%;
+    overflow-y: hidden;
 }
 
 /* Filter Bar Container */
