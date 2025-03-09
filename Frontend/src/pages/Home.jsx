@@ -23,6 +23,9 @@ function Home() {
     const [conditionSearch, setConditionSearch] = useState('');
     const [sortType, setSortType] = useState('');
     const [selectedCollege, setSelectedCollege] = useState('');
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
+    
 
     useEffect(() => {
         let filteredBooks = [...originalBooks];
@@ -43,7 +46,12 @@ function Home() {
         const matchesCollege = !selectedCollege || 
             book.college === selectedCollege;
 
-        return matchesConditions && matchesSearch && matchesCollege;
+        // New price range filter
+        const price = book.price;
+        const meetsMin = !minPrice || price >= Number(minPrice);
+        const meetsMax = !maxPrice || price <= Number(maxPrice);
+
+        return meetsMin && meetsMax && matchesConditions && matchesSearch && matchesCollege;
     });
 
     // Apply sorting
@@ -54,7 +62,7 @@ function Home() {
     }
         
         setDisplayedBooks(filteredBooks);
-    }, [originalBooks, selectedConditions, conditionSearch, sortType, selectedCollege]);
+    }, [minPrice, maxPrice, originalBooks, selectedConditions, conditionSearch, sortType, selectedCollege]);
 
     const handleConditionChange = (condition, isChecked) => {
         setSelectedConditions(prev => 
@@ -78,6 +86,10 @@ function Home() {
             <div className="main-container">
                 <div className="filter-section">
                     <FilterBar 
+                        onMinPriceChange={setMinPrice}
+                        onMaxPriceChange={setMaxPrice}
+                        minPrice={minPrice}
+                        maxPrice={maxPrice}
                         onSortChange={handleSortChange}
                         onConditionChange={handleConditionChange}
                         onConditionSearchChange={setConditionSearch}

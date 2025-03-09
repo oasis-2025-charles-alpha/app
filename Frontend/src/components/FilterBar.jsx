@@ -5,7 +5,11 @@ function FilterBar({
     selectedConditions,
     conditionSearch, 
     onCollegeChange,
-    selectedCollege
+    selectedCollege,
+    onMinPriceChange,
+    onMaxPriceChange,
+    minPrice,
+    maxPrice
 }) {
     return (
         <div className="filter-container">
@@ -20,6 +24,27 @@ function FilterBar({
                         Price: Low to High
                     </button>
                 </nav>
+            </div>
+
+            <div className="price-range-filter">
+                <h3>Price Range</h3>
+                <div className="price-inputs">
+                    <input
+                        type="number"
+                        placeholder="Min"
+                        value={minPrice || ''}
+                        onChange={(e) => onMinPriceChange(e.target.value)}
+                        min="0"
+                    />
+                    <span>-</span>
+                    <input
+                        type="number"
+                        placeholder="Max"
+                        value={maxPrice || ''}
+                        onChange={(e) => onMaxPriceChange(e.target.value)}
+                        min="0"
+                    />
+                </div>
             </div>
 
             {/* Condition Filter Section */}
@@ -60,6 +85,7 @@ function FilterBar({
                         onChange={(e) => onConditionSearchChange(e.target.value)}
                     />
                 </div>
+                
             </div>
 
             {/* College Filter Section */}
