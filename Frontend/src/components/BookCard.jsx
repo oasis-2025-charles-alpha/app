@@ -1,4 +1,4 @@
-function BookCard({ title, author, price, imageUrl, condition }) {
+function BookCard({ title, author, price, college, imageUrl, condition }) {
     return (
         <div className="book-card">
             <img src={imageUrl} alt={title} className="book-image" />
@@ -8,6 +8,9 @@ function BookCard({ title, author, price, imageUrl, condition }) {
                 <div className="price-condition">
                     <span className="book-price">${price}</span>
                     <span className="book-condition">{condition}</span>
+                </div>
+                <div className="book-college">
+                    {college}
                 </div>
             </div>
         </div>

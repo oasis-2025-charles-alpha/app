@@ -105,6 +105,13 @@
     min-height: min-content; /* Important for proper scrolling */
 }
 
+.book-college {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #4a5568;
+    font-style: italic;
+}
+
 .filter-section {
     width: 450px;
     border-right: 2px solid #ddd; /* This creates the vertical line */

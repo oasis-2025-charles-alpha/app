@@ -3,7 +3,9 @@ function FilterBar({
     onConditionChange, 
     onConditionSearchChange,
     selectedConditions,
-    conditionSearch 
+    conditionSearch, 
+    onCollegeChange,
+    selectedCollege
 }) {
     return (
         <div className="filter-container">
@@ -63,7 +65,9 @@ function FilterBar({
             {/* College Filter Section */}
             <div className="college-filter">
                 <h3>College</h3>
-                <select onChange={(e) => console.log('College filter:', e.target.value)}>
+                <select 
+                    value={selectedCollege || ''}
+                    onChange={(e) => onCollegeChange(e.target.value)}>
                     <option value="">All Colleges</option>
                     <option value="Khoury College">Khoury College</option>
                     <option value="School of Law">School of Law</option>
