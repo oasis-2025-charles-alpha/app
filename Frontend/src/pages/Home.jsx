@@ -16,7 +16,7 @@ function Home() {
         { id: 7, title: 'Andy is SharkBee', author: 'Jaden Mei', price: 45.99, condition: 'Good', college: 'Khoury College', imageUrl: 'https://media-hosting.imagekit.io//d4c9780b5ed44a7a/IMG_9788%202.jpg?Expires=1836077294&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=yZyUrRWi-QZmYVxdqxaVQCVwvPXf-x0RLxDAPLx-Bf6cOhkmUxeI1OQmSSdh64dZg0mWhaBfXVcrAJW35lL2Fyqkd~~NQzsTUmzz1~dj-DVUizNXJKHPdP9x9LKKSqb~-Xp2f-8GzjSe0vLfnsIKNgNu7vNaGvmbCY5XvtfkEK1HTZ81uljsYoHf689Wf2KxqeawZ3BqQAl5Y4kCJIYyiMctWzhbuFwa8-QwWE267JdGGnw~wMf7ASvKCrQHXAitIzaACD9JNT1tNnzXKXCv2aCoiCKhKHVYZJqlbHiaR7Y0E8jN7baCZT55NxtfshHCnRpatkIG8zSuckrLFXJszQ__' },
         { id: 8, title: 'Andy is SharkBee', author: 'Jane Smith', price: 32.50, condition: 'Well-Worn', college: 'Khoury College', imageUrl: 'https://media-hosting.imagekit.io//d4c9780b5ed44a7a/IMG_9788%202.jpg?Expires=1836077294&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=yZyUrRWi-QZmYVxdqxaVQCVwvPXf-x0RLxDAPLx-Bf6cOhkmUxeI1OQmSSdh64dZg0mWhaBfXVcrAJW35lL2Fyqkd~~NQzsTUmzz1~dj-DVUizNXJKHPdP9x9LKKSqb~-Xp2f-8GzjSe0vLfnsIKNgNu7vNaGvmbCY5XvtfkEK1HTZ81uljsYoHf689Wf2KxqeawZ3BqQAl5Y4kCJIYyiMctWzhbuFwa8-QwWE267JdGGnw~wMf7ASvKCrQHXAitIzaACD9JNT1tNnzXKXCv2aCoiCKhKHVYZJqlbHiaR7Y0E8jN7baCZT55NxtfshHCnRpatkIG8zSuckrLFXJszQ__' },
         { id: 9, title: 'Andy is SharkBee', author: 'Mike Johnson', price: 28.75, condition: 'Good', college: 'Khoury College', imageUrl: 'https://media-hosting.imagekit.io//d4c9780b5ed44a7a/IMG_9788%202.jpg?Expires=1836077294&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=yZyUrRWi-QZmYVxdqxaVQCVwvPXf-x0RLxDAPLx-Bf6cOhkmUxeI1OQmSSdh64dZg0mWhaBfXVcrAJW35lL2Fyqkd~~NQzsTUmzz1~dj-DVUizNXJKHPdP9x9LKKSqb~-Xp2f-8GzjSe0vLfnsIKNgNu7vNaGvmbCY5XvtfkEK1HTZ81uljsYoHf689Wf2KxqeawZ3BqQAl5Y4kCJIYyiMctWzhbuFwa8-QwWE267JdGGnw~wMf7ASvKCrQHXAitIzaACD9JNT1tNnzXKXCv2aCoiCKhKHVYZJqlbHiaR7Y0E8jN7baCZT55NxtfshHCnRpatkIG8zSuckrLFXJszQ__' },
-    ]);
+      ]);
 
     const [displayedBooks, setDisplayedBooks] = useState(originalBooks);
     const [selectedConditions, setSelectedConditions] = useState([]);
@@ -25,29 +25,29 @@ function Home() {
     const [selectedCollege, setSelectedCollege] = useState('');
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
-    
 
     useEffect(() => {
         let filteredBooks = [...originalBooks];
+        
         
         // Combine checkbox and search filters
     filteredBooks = filteredBooks.filter(book => {
         // Condition filters
         const matchesConditions = selectedConditions.length === 0 || 
             selectedConditions.some(condition => 
-                book.condition.toLowerCase().includes(condition.toLowerCase())
+                book.condition.toLowerCase() === condition.toLowerCase()
             );
         
         // Condition search
         const matchesSearch = book.condition.toLowerCase()
-            .includes(conditionSearch.toLowerCase());
+            .includes(conditionSearch.toLowerCase().trim());
         
         // College filter
         const matchesCollege = !selectedCollege || 
             book.college === selectedCollege;
 
         // New price range filter
-        const price = book.price;
+        const price = Number(book.price);
         const meetsMin = !minPrice || price >= Number(minPrice);
         const meetsMax = !maxPrice || price <= Number(maxPrice);
 
@@ -101,9 +101,9 @@ function Home() {
                 </div>
                 <div className="book-list-section">
                     <div className="books-grid">
-                        {displayedBooks.map(book => (
-                            <BookCard key={book.id} {...book} />
-                        ))}
+                    {displayedBooks.map(book => (
+                 <BookCard key={book.id} book={book} />  // ← This is the crucial fix
+                ))}
                     </div>
                 </div>
             </div>
