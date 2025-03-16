@@ -17,6 +17,8 @@ function Home() {
         { id: 9, title: 'Andy is SharkBee', author: 'Mike Johnson', price: 28.75, condition: 'Good', college: 'Khoury College', imageUrl: 'https://media-hosting.imagekit.io//d4c9780b5ed44a7a/IMG_9788%202.jpg?Expires=1836077294&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=yZyUrRWi-QZmYVxdqxaVQCVwvPXf-x0RLxDAPLx-Bf6cOhkmUxeI1OQmSSdh64dZg0mWhaBfXVcrAJW35lL2Fyqkd~~NQzsTUmzz1~dj-DVUizNXJKHPdP9x9LKKSqb~-Xp2f-8GzjSe0vLfnsIKNgNu7vNaGvmbCY5XvtfkEK1HTZ81uljsYoHf689Wf2KxqeawZ3BqQAl5Y4kCJIYyiMctWzhbuFwa8-QwWE267JdGGnw~wMf7ASvKCrQHXAitIzaACD9JNT1tNnzXKXCv2aCoiCKhKHVYZJqlbHiaR7Y0E8jN7baCZT55NxtfshHCnRpatkIG8zSuckrLFXJszQ__' },
       ]);
 
+    //const [textbook, setTextbook] = useState()
+
     const [displayedBooks, setDisplayedBooks] = useState(originalBooks);
     const [selectedConditions, setSelectedConditions] = useState([]);
     const [conditionSearch, setConditionSearch] = useState('');
@@ -29,9 +31,19 @@ function Home() {
     useEffect(() => {
         let filteredBooks = [...originalBooks];
         
-        
+        // const fetchTextbook = async () => {
+        //     try {
+        //     const response = await axios.get('http://127.0.0.1:5000/textbooks');
+        //     setTextbook(response.data)
+        //     } catch (error) {
+        //         console.error('Error fetching data:', error);
+        //     }
+        // }
+
+        // fetchData()
+
         // Combine checkbox and search filters
-    filteredBooks = filteredBooks.filter(book => {
+        filteredBooks = filteredBooks.filter(book => {
         // Condition filters
         const matchesConditions = selectedConditions.length === 0 || 
             selectedConditions.some(condition => 
@@ -57,7 +69,7 @@ function Home() {
                 book.college.toLowerCase().includes(searchQuery.toLowerCase());
 
         return meetsMin && meetsMax && matchesConditions && matchesSearch && matchesSearchBig && matchesCollege;
-    });
+    }, []);
 
     // Apply sorting
     if (sortType === 'high-low') {
