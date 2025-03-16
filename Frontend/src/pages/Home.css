@@ -1,3 +1,56 @@
+/* Required field indicator */
+.form-group label[required]::after,
+.form-group input[required]::placeholder,
+.form-group select[required]::after {
+    content: "*";
+    color: #ef4444;
+    margin-left: 2px;
+}
+
+.form-or {
+    color: #64748b;
+    text-align: center;
+    margin: 0.5rem 0;
+    display: block;
+}
+
+.new-entry-group {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: 1fr 1fr;
+}
+
+.new-entry-group input::placeholder {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.add-book-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select {
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
 /* Go Back Button */
 .go-back-btn {
     background: none;
