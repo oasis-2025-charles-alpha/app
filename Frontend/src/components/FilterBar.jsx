@@ -11,6 +11,13 @@ function FilterBar({
     minPrice,
     maxPrice
 }) {
+
+    const courseCategories = [
+        'MATH', 'CS', 'BIOL', 'CHEM',
+        'PHYS', 'ENG', 'ECON', 'HIST',
+        'PSYC', 'SOCL', 'PHIL', 'ARTG',
+        'MUSC', 'THTR', 'BUSN', 'ACCT'
+    ];
     return (
         <div className="filter-container">
             {/* Price Sorting Section */}
@@ -68,38 +75,28 @@ function FilterBar({
 
             {/* Condition Filter Section */}
             <div className="condition-filter">
-                <h3>Condition</h3>
-                <div>
-                    <input 
-                        type="checkbox" 
-                        id="good"
-                        checked={selectedConditions.includes('Good')}
-                        onChange={(e) => onConditionChange('Good', e.target.checked)}
-                    />
-                    <label htmlFor="good">Good</label>
-                </div>
-                <div>
-                    <input 
-                        type="checkbox" 
-                        id="barely-used"
-                        checked={selectedConditions.includes('Barely Used')}
-                        onChange={(e) => onConditionChange('Barely Used', e.target.checked)}
-                    />
-                    <label htmlFor="barely-used">Barely Used</label>
-                </div>
-                <div>
-                    <input 
-                        type="checkbox" 
-                        id="well-worn"
-                        checked={selectedConditions.includes('Well-Worn')}
-                        onChange={(e) => onConditionChange('Well-Worn', e.target.checked)}
-                    />
-                    <label htmlFor="well-worn">Well-Worn</label>
+                <h3>Course Category</h3>
+                <div className="condition-grid">
+                    {courseCategories
+                        .filter(category => 
+                            category.toLowerCase().includes(conditionSearch.toLowerCase())
+                        )
+                        .map(category => (
+                            <div className="condition-item" key={category}>
+                                <input 
+                                    type="checkbox" 
+                                    id={category}
+                                    checked={selectedConditions.includes(category)}
+                                    onChange={(e) => onConditionChange(category, e.target.checked)}
+                                />
+                                <label htmlFor={category}>{category}</label>
+                            </div>
+                        ))}
                 </div>
                 <div className="condition-search">
                     <input
                         type="text"
-                        placeholder="Search conditions..."
+                        placeholder="Search course category..."
                         value={conditionSearch}
                         onChange={(e) => onConditionSearchChange(e.target.value)}
                     />
