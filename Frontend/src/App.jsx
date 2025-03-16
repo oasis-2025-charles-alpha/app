@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Sell from './pages/Sell';
 import { LikesProvider } from './context/LikesContext';
 import LikesList from './pages/LikesList';
+import AddBookPage from './pages/AddBookPage';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='sell' element={<Sell />} />
           <Route path='/likes' element={<LikesList />} />
+          <Route path="/add-book" element={<AddBookPage />} />
         </Routes>
       </Router>
     </LikesProvider>

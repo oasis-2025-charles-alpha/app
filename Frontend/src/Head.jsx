@@ -18,6 +18,10 @@ function Head({ searchQuery = '', onSearchChange = () => {} }) {
                     />
                 </form>
             </nav>
+
+            <Link to="/add-book" className="add-book-btn">
+            + Add Book + 
+            </Link>
             
             <nav className="flex items-center gap-4 p-2">
                 <div className="user-actions flex items-center gap-2">
