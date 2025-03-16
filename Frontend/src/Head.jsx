@@ -7,7 +7,7 @@ function Head({ searchQuery = '', onSearchChange = () => {} }) {
     return (
         <header className="flex items-center justify-between w-full">
             <nav className="flex items-center gap-4 p-2 flex-1">
-                <div className="logo">Logo</div>
+                <div className="logo">Xiaobin's BookStore</div>
                 <form action="#" id="search-form">
                     <input 
                         type="text" 
