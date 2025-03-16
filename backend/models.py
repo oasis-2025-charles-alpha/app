@@ -4,8 +4,8 @@ class Textbook(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     textbook_name = db.Column(db.String(120), unique=False, nullable=False)
     textbook_author = db.Column(db.String(120), unique=False, nullable=False)
-    textbook_condition = db.Column(db.Boolean, nullable=False)
-    textbook_price = db.Column(db.Boolean, nullable=False)
+    textbook_condition = db.Column(db.String(120), nullable=False)
+    textbook_price = db.Column(db.Float, nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
     professor_id = db.Column(db.Integer, db.ForeignKey("professor.id"), nullable=False)
 
