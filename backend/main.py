@@ -128,6 +128,8 @@ def delete_course(course_id):
 def get_textbooks():
     course_id = request.args.get("courseId")
     professor_id = request.args.get("professorId")
+    textbook_price = request.args.get("textbookPrice")
+    textbook_condition = request.args.get("textbookCondition")
 
     sql = """
         SELECT professor.professor_fname, professor.professor_lname,
@@ -147,6 +149,11 @@ def get_textbooks():
     if professor_id:
         filters.append("professor.id = :professor_id")
         params["professor_id"] = professor_id
+    if textbook_price:
+        filters.append("textbook.textbook_price = textbook_price")
+        params["textbook_price"] = textbook_price
+    if textbook_condition:
+        filters.append("textbook.textbook_condition = textbook_condition")
 
     if filters:
         sql += " WHERE " + " AND ".join(filters)
@@ -161,16 +168,19 @@ def create_textbook():
     textbook_name = request.json.get("textbookName")
     textbook_author = request.json.get("textbookAuthor")
     textbook_condition = request.json.get("textbookCondition")
+    textbook_price = request.json.get("textbookPrice")
     course_id = request.json.get("courseId")
     professor_id = request.json.get("professorId")
 
-    if not textbook_name or not textbook_author or not course_id or not professor_id:
+    if (not textbook_name or not textbook_author or not 
+        textbook_price or not course_id or not professor_id):
         return jsonify({"message": "All fields are required!"}), 400
 
     new_textbook = Textbook(
         textbook_name = textbook_name,
         textbook_author = textbook_author,
         textbook_condition = textbook_condition,
+        textbook_price = textbook_price,
         course_id = course_id,
         professor_id = professor_id
     )

@@ -5,6 +5,7 @@ class Textbook(db.Model):
     textbook_name = db.Column(db.String(120), unique=False, nullable=False)
     textbook_author = db.Column(db.String(120), unique=False, nullable=False)
     textbook_condition = db.Column(db.Boolean, nullable=False)
+    textbook_price = db.Column(db.Boolean, nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
     professor_id = db.Column(db.Integer, db.ForeignKey("professor.id"), nullable=False)
 
@@ -17,6 +18,7 @@ class Textbook(db.Model):
             "textbookName": self.textbook_name,
             "textbookAuthor": self.textbook_author,
             "textbookCondition": self.textbook_condition,
+            "textbookPrice": self.textbook_price,
             "courseId": self.course_id,
             "professorId": self.professor_id
         }
