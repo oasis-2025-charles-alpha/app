@@ -18,6 +18,22 @@ function FilterBar({
         'PSYC', 'SOCL', 'PHIL', 'ARTG',
         'MUSC', 'THTR', 'BUSN', 'ACCT'
     ];
+
+    // const [courseCategories, setCourseCategories] = useState([])
+
+    // useEffect(() => {
+    //     const fetchCourses = async () => {
+    //         try {
+    //             const response = await axios.get('http://127.0.0.1:5000/courses')
+    //             setCourseCategories(response.data)
+    //         } catch (error) {
+    //             console.error('Error fetching data:', error)
+    //         }
+    //     }
+    //     fetchCourses()
+    // }, [])
+
+
     return (
         <div className="filter-container">
             {/* Price Sorting Section */}

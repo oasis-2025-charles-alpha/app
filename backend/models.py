@@ -40,7 +40,8 @@ class Professor(db.Model):
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     course_subject = db.Column(db.String(80), unique=False, nullable=False)
-    course_number = db.Column(db.Integer, unique=True, nullable=False)
+    course_number = db.Column(db.Integer, unique=False, nullable=False)
+    course_college = db.Column(db.String(80), unique=False, nullable=False)
     
     textbooks = db.relationship("Textbook", back_populates="course", cascade="all, delete-orphan")
 
@@ -48,5 +49,6 @@ class Course(db.Model):
         return {
             "id": self.id,
             "courseSubject": self.course_subject,
-            "courseNumber": self.course_number
+            "courseNumber": self.course_number,
+            "courseCollege": self.course_college
         }
