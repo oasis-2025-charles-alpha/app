@@ -23,7 +23,7 @@ function LikesList() {
                         <BookCard 
                             key={book.id} 
                             book={book} 
-                            className="book-card" /* Ensure class is passed */
+                            className="book-card" 
                         />
                     ))}
                 </div>

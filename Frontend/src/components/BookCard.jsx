@@ -3,7 +3,6 @@ import { useLikes } from '../context/LikesContext';
 function BookCard({ book }) {
     const { toggleLike, likedBooks } = useLikes();
     const isLiked = likedBooks.some(b => b.id === book.id);
-    const [imgError, setImgError] = useState(false);
     if (! book?.id) {
         return null;
     }
@@ -15,7 +14,6 @@ function BookCard({ book }) {
                 ♥
             </button>
             
-            {/* Update all props to use book object */}
             <img src={book.imageUrl} alt={book.title} className="book-image" />
             <div className="book-details">
                 <h3 className="book-title">{book.title}</h3>
