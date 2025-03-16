@@ -24,6 +24,7 @@ function Home() {
     const [selectedCollege, setSelectedCollege] = useState('');
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         let filteredBooks = [...originalBooks];
@@ -50,7 +51,12 @@ function Home() {
         const meetsMin = !minPrice || price >= Number(minPrice);
         const meetsMax = !maxPrice || price <= Number(maxPrice);
 
-        return meetsMin && meetsMax && matchesConditions && matchesSearch && matchesCollege;
+        const matchesSearchBig = searchQuery.toLowerCase() === '' || 
+                book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                book.college.toLowerCase().includes(searchQuery.toLowerCase());
+
+        return meetsMin && meetsMax && matchesConditions && matchesSearch && matchesSearchBig && matchesCollege;
     });
 
     // Apply sorting
@@ -61,7 +67,7 @@ function Home() {
     }
         
         setDisplayedBooks(filteredBooks);
-    }, [minPrice, maxPrice, originalBooks, selectedConditions, conditionSearch, sortType, selectedCollege]);
+    }, [minPrice, maxPrice, originalBooks, selectedConditions, conditionSearch, sortType, selectedCollege, searchQuery]);
 
     const handleConditionChange = (condition, isChecked) => {
         setSelectedConditions(prev => 
@@ -81,7 +87,8 @@ function Home() {
 
     return (
         <>
-            <Head />
+            <Head searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery} />
             <div className="main-container">
                 <div className="filter-section">
                     <FilterBar 
@@ -96,6 +103,7 @@ function Home() {
                         conditionSearch={conditionSearch}
                         onCollegeChange={handleCollegeChange}
                         selectedCollege={selectedCollege}
+                        
                     />
                 </div>
                 <div className="book-list-section">

@@ -1,18 +1,20 @@
 import { Link } from 'react-router-dom';
 import { useLikes } from './context/LikesContext';
 
-// components/Head.jsx
-function Head() {
+function Head({ searchQuery = '', onSearchChange = () => {} }) { 
     const { likedBooks } = useLikes();
-    return ( 
+    
+    return (
         <header className="flex items-center justify-between w-full">
             <nav className="flex items-center gap-4 p-2 flex-1">
                 <div className="logo">Logo</div>
                 <form action="#" id="search-form">
                     <input 
                         type="text" 
-                        placeholder="Search" 
+                        placeholder="Search books..." 
                         className="search-bar" 
+                        value={searchQuery}
+                        onChange={(e) => onSearchChange(e.target.value)}
                     />
                 </form>
             </nav>
@@ -27,7 +29,7 @@ function Head() {
                 <button className="login-btn">Log in</button>
             </nav>
         </header>
-    )
+    );
 }
 
 export default Head;

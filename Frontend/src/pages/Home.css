@@ -1,3 +1,26 @@
+.search-bar {
+    padding: 0.6rem 1.2rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 24px;
+    width: 400px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.search-bar:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Responsive search bar */
+@media (max-width: 768px) {
+    .search-bar {
+        width: 200px;
+    }
+}
+
 /* Likes header styling */
 .likes-header {
     display: flex;
