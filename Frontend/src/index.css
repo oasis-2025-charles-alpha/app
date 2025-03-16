@@ -88,7 +88,7 @@ header > nav:last-child {
     box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
 }
 
-/* Right Navigation Styles */
+
 .user-actions {
     display: flex;
     align-items: center;
@@ -124,7 +124,7 @@ header > nav:last-child {
     transform: translateY(-1px);
 }
 
-/* Icon Styles (you might want to add icons later) */
+
 .likes-btn::before {
     content: '♥';
 }
