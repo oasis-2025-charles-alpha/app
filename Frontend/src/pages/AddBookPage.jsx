@@ -45,8 +45,7 @@ function AddBookPage() {
         e.preventDefault();
         try {
             let professorId = formData.professorId;
-            
-            // 1. Handle professor first
+        
             if (!professorId) {
                 if (!formData.professorFname || !formData.professorLname) {
                     alert('Please either select an existing professor or create a new one');
@@ -56,10 +55,10 @@ function AddBookPage() {
                     professorFname: formData.professorFname,
                     professorLname: formData.professorLname
                 });
-                professorId = professorRes.data.id; // Ensure this matches backend response
+                professorId = professorRes.data.id; 
             }
     
-            // 2. Handle course second
+           
             let courseId = formData.courseId;
             let courseSubject = '';
             
@@ -79,7 +78,6 @@ function AddBookPage() {
                 courseSubject = selectedCourse?.courseSubject || '';
             }
     
-            // 3. Create textbook with all resolved IDs
             await axios.post('http://127.0.0.1:5000/create_textbook', {
                 textbookName: formData.textbookName,
                 textbookAuthor: formData.textbookAuthor,
@@ -134,7 +132,7 @@ function AddBookPage() {
                     />
                 </div>
 
-                {/* Update Course Selection Section */}
+
                 <div className="form-group">
                     <label>Course *</label>
                     <select
