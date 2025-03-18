@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AddBookPage = () => {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         textbookName: "",
         textbookAuthor: "",
@@ -10,7 +12,7 @@ const AddBookPage = () => {
         courseId: "",
         courseSubject: "",
         courseNumber: "",
-        courseCollege: "",
+        //courseCollege: "",
         professorId: "",
         professorFname: "",
         professorLname: ""
@@ -19,35 +21,35 @@ const AddBookPage = () => {
     const [courses, setCourses] = useState([]);
     const [professors, setProfessors] = useState([]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const coursesResponse = await fetch("http://127.0.0.1:5000/courses");
-                const professorsResponse = await fetch("http://127.0.0.1:5000/professors");
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const coursesResponse = await fetch("http://127.0.0.1:5000/courses");
+    //             const professorsResponse = await fetch("http://127.0.0.1:5000/professors");
 
-                const coursesData = await coursesResponse.json();
-                const professorsData = await professorsResponse.json();
+    //             const coursesData = await coursesResponse.json();
+    //             const professorsData = await professorsResponse.json();
 
-                setCourses(coursesData);
-                setProfessors(professorsData);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
+    //             setCourses(coursesData);
+    //             setProfessors(professorsData);
+    //         } catch (error) {
+    //             console.error("Error fetching data:", error);
+    //         }
+    //     };
 
-        fetchData();
-    }, []);
+    //     fetchData();
+    // }, []);
 
     const onSubmit = async (e) => {
-        const navigate = useNavigate();
-
         e.preventDefault();
     
         try {
+            console.log("Ronald1")
             // Create Professor
-            let professorId = formData.professorId;
-    
+            //let professorId = formData.professorId;
+            let professorId = null
             if (!professorId && formData.professorFname && formData.professorLname) {
+                console.log("Ronald1")
                 const professorData = {
                     professorFname: formData.professorFname,
                     professorLname: formData.professorLname,
@@ -69,14 +71,14 @@ const AddBookPage = () => {
                 professorId = professorResult.id;
             }
     
-            let courseId = formData.courseId;
-            
+            //let courseId = formData.courseId;
+            let courseId = null
             // Create Course
             if (!courseId && formData.courseSubject && formData.courseNumber) {
                 const courseData = {
                     courseSubject: formData.courseSubject,
                     courseNumber: formData.courseNumber,
-                    courseCollege: formData.courseCollege,
+                    //courseCollege: formData.courseCollege,
                 };
     
                 const courseResponse = await fetch("http://127.0.0.1:5000/create_course", {
@@ -86,11 +88,12 @@ const AddBookPage = () => {
                 });
     
                 if (!courseResponse.ok) {
+                    console.log("Course response not ok")
                     const courseData = await courseResponse.json();
                     alert(courseData.message);
                     return;
                 }
-    
+                
                 const courseResult = await courseResponse.json();
                 courseId = courseResult.id;
             }

@@ -1,8 +1,7 @@
 from flask import request, jsonify
 from config import app, db
-from models import Textbook
-from models import Professor
-from models import Course
+from models import Textbook, Professor, Course
+from sqlalchemy import text
 
 # Professor commands
 # Get all Professors
@@ -39,7 +38,7 @@ def create_professor():
 def update_professor(professor_id):
     professor = Professor.query.get(professor_id)
 
-    if not Professor:
+    if not professor:
         return jsonify({"message": "Professor not found"}), 404
     
     data = request.json
@@ -63,7 +62,7 @@ def delete_professor(professor_id):
     db.session.delete(professor)
     db.session.commit()
 
-    return jsonify({"message": "Professor deleted!"}, 200)
+    return jsonify({"message": "Professor deleted!"}), 200
 
 # Course Commands
 # Get all courses
@@ -126,15 +125,16 @@ def delete_course(course_id):
 # Get all textbooks (with optional filters for course_id & professor_id)
 @app.route("/textbooks", methods=["GET"])
 def get_textbooks():
-    course_id = request.args.get("courseId")
-    professor_id = request.args.get("professorId")
-    textbook_price = request.args.get("textbookPrice")
+    course_id = int(request.json.get("courseId", 0))
+    professor_id = int(request.json.get("professorId", 0))
+    textbook_price = float(request.json.get("textbookPrice", 0))
     textbook_condition = request.args.get("textbookCondition")
 
     sql = """
         SELECT professor.professor_fname, professor.professor_lname,
                course.course_subject, course.course_number,
-               textbook.textbook_name, textbook.textbook_author
+               textbook.textbook_name, textbook.textbook_author,
+               textbook.textbook_price, textbook.textbook_condition
         FROM textbook
         JOIN course ON textbook.course_id = course.id
         JOIN professor ON textbook.professor_id = professor.id
@@ -150,15 +150,16 @@ def get_textbooks():
         filters.append("professor.id = :professor_id")
         params["professor_id"] = professor_id
     if textbook_price:
-        filters.append("textbook.textbook_price = textbook_price")
+        filters.append("textbook.textbook_price = :textbook_price")
         params["textbook_price"] = textbook_price
     if textbook_condition:
-        filters.append("textbook.textbook_condition = textbook_condition")
+        filters.append("textbook.textbook_condition = :textbook_condition")
+        params["textbook_condition"] = textbook_condition
 
     if filters:
         sql += " WHERE " + " AND ".join(filters)
 
-    result = db.session.execute(db.text(sql), params)
+    result = db.session.execute(text(sql), params)
     textbooks = [dict(row._mapping) for row in result]
 
     return jsonify({"textbooks": textbooks})
@@ -172,10 +173,16 @@ def create_textbook():
     course_id = request.json.get("courseId")
     professor_id = request.json.get("professorId")
 
-    if (not textbook_name or not textbook_author or not 
-        textbook_price or not course_id or not professor_id):
-        return jsonify({"message": "All fields are required!"}), 400
-
+    # if (not textbook_name or not textbook_author or not 
+    #     textbook_price or not course_id or not professor_id):
+    #     return jsonify({"message": "All fields are required!"}), 400
+    if not textbook_name or not textbook_author or not textbook_price:
+        return jsonify({"message": "test1"}), 400
+    if not course_id:
+        return jsonify({"message": "course"}), 400
+    if not professor_id:
+        return jsonify({"message": "professor"}), 400
+    
     new_textbook = Textbook(
         textbook_name = textbook_name,
         textbook_author = textbook_author,
@@ -219,8 +226,9 @@ def delete_textbook(textbook_id):
 
     return jsonify({"message": "Textbook deleted!"}), 200
 
+with app.app_context():
+    db.create_all()
+
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
 
     app.run(debug=True)
