@@ -28,7 +28,7 @@ def create_professor():
     try:
         db.session.add(new_professor)
         db.session.commit()
-        return jsonify({"message": "Professor added!"}), 201
+        return jsonify({"message": "Professor added!", "id": new_professor.id}), 201
     except Exception as e:
         return jsonify({"message": "Error adding professor", "error": str(e)}), 500
 
@@ -89,7 +89,7 @@ def create_course():
     try:
         db.session.add(new_course)
         db.session.commit()
-        return jsonify({"message": "Course created!"}), 201
+        return jsonify({"message": "Course created!", "id": new_course.id}), 201
     except Exception as e:
         return jsonify({"message": "Error adding course", "error": str(e)}), 500
 
@@ -192,10 +192,12 @@ def create_textbook():
         professor_id = professor_id
     )
 
-    db.session.add(new_textbook)
-    db.session.commit()
-
-    return jsonify({"message": "Textbook created!"}), 201
+    try:
+        db.session.add(new_textbook)
+        db.session.commit()
+        return jsonify({"message": "Course created!"}), 201
+    except Exception as e:
+        return jsonify({"message": "Error adding textbook", "error": str(e)}), 500
 
 @app.route("/update_textbook/<int:textbook_id>", methods=["PATCH"])
 def update_textbook(textbook_id):

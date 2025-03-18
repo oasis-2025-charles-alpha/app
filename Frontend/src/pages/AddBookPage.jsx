@@ -46,8 +46,7 @@ const AddBookPage = () => {
         try {
             console.log("Ronald1")
             // Create Professor
-            //let professorId = formData.professorId;
-            let professorId = null
+            let professorId = formData.professorId;
             if (!professorId && formData.professorFname && formData.professorLname) {
                 console.log("Ronald1")
                 const professorData = {
@@ -60,19 +59,18 @@ const AddBookPage = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(professorData),
                 });
-    
-                if (!professorResponse.ok) {
-                    const data = await professorResponse.json();
-                    alert(data.message);
-                    return;
-                }
-    
                 const professorResult = await professorResponse.json();
-                professorId = professorResult.id;
+
+                if (!professorResponse.ok) {
+                    alert(professorResult.message);
+                    return;
+                } else {
+                    professorId = professorResult.id;
+                }
+
             }
     
-            //let courseId = formData.courseId;
-            let courseId = null
+            let courseId = formData.courseId;
             // Create Course
             if (!courseId && formData.courseSubject && formData.courseNumber) {
                 const courseData = {
@@ -86,16 +84,14 @@ const AddBookPage = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(courseData),
                 });
-    
-                if (!courseResponse.ok) {
-                    console.log("Course response not ok")
-                    const courseData = await courseResponse.json();
-                    alert(courseData.message);
-                    return;
-                }
-                
                 const courseResult = await courseResponse.json();
-                courseId = courseResult.id;
+
+                if (!courseResponse.ok) {
+                    alert(courseResult.message);
+                    return;
+                } else {
+                    courseId = courseResult.id;
+                }
             }
     
             // Create Textbook
