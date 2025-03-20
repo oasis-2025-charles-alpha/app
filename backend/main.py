@@ -42,10 +42,9 @@ def update_professor(professor_id):
         return jsonify({"message": "Professor not found"}), 404
     
     data = request.json
-    professor.fname = data.get("professorFname", 
-                               professor.professor_fname)
-    professor.lname = data.get("professorLname", 
-                               professor.professor_lname)
+    professor.professor_fname = data.get("professorFname", professor.professor_fname)
+    professor.professor_lname = data.get("professorLname", professor.professor_lname)
+
 
     db.session.commit()
 
@@ -62,7 +61,8 @@ def delete_professor(professor_id):
     db.session.delete(professor)
     db.session.commit()
 
-    return jsonify({"message": "Professor deleted!"}), 200
+    return jsonify({"message": "Course deleted!"}), 200
+
 
 # Course Commands
 # Get all courses
@@ -125,44 +125,54 @@ def delete_course(course_id):
 # Get all textbooks (with optional filters for course_id & professor_id)
 @app.route("/textbooks", methods=["GET"])
 def get_textbooks():
-    course_id = int(request.json.get("courseId", 0))
-    professor_id = int(request.json.get("professorId", 0))
-    textbook_price = float(request.json.get("textbookPrice", 0))
+    course_id = request.args.get("courseId", type=int)
+    professor_id = request.args.get("professorId", type=int)
+    textbook_price = request.args.get("textbookPrice", type=float)
     textbook_condition = request.args.get("textbookCondition")
 
-    sql = """
-        SELECT professor.professor_fname, professor.professor_lname,
-               course.course_subject, course.course_number,
-               textbook.textbook_name, textbook.textbook_author,
-               textbook.textbook_price, textbook.textbook_condition
-        FROM textbook
-        JOIN course ON textbook.course_id = course.id
-        JOIN professor ON textbook.professor_id = professor.id
-    """
+    # Start the query by joining necessary tables
+    query = db.session.query(
+        Textbook.textbook_name,
+        Textbook.textbook_author,
+        Textbook.textbook_price,
+        Textbook.textbook_condition,
+        Course.course_subject,
+        Course.course_number,
+        Professor.professor_fname,
+        Professor.professor_lname
+    ).join(Course, Textbook.course_id == Course.id
+    ).join(Professor, Textbook.professor_id == Professor.id)
 
-    filters = []
-    params = {}
-
+    # Apply filters if they exist
     if course_id:
-        filters.append("course.id = :course_id")
-        params["course_id"] = course_id
+        query = query.filter(Course.id == course_id)
     if professor_id:
-        filters.append("professor.id = :professor_id")
-        params["professor_id"] = professor_id
+        query = query.filter(Professor.id == professor_id)
     if textbook_price:
-        filters.append("textbook.textbook_price = :textbook_price")
-        params["textbook_price"] = textbook_price
+        query = query.filter(Textbook.textbook_price == textbook_price)
     if textbook_condition:
-        filters.append("textbook.textbook_condition = :textbook_condition")
-        params["textbook_condition"] = textbook_condition
+        query = query.filter(Textbook.textbook_condition == textbook_condition)
 
-    if filters:
-        sql += " WHERE " + " AND ".join(filters)
+    # Execute the query
+    textbooks = query.all()
 
-    result = db.session.execute(text(sql), params)
-    textbooks = [dict(row._mapping) for row in result]
+    # Convert results to a list of dictionaries
+    textbook_list = [
+        {
+            "textbook_name": textbook.textbook_name,
+            "textbook_author": textbook.textbook_author,
+            "textbook_price": textbook.textbook_price,
+            "textbook_condition": textbook.textbook_condition,
+            "course_subject": textbook.course_subject,
+            "course_number": textbook.course_number,
+            "professor_fname": textbook.professor_fname,
+            "professor_lname": textbook.professor_lname,
+        }
+        for textbook in textbooks
+    ]
 
-    return jsonify({"textbooks": textbooks})
+    return jsonify({"textbooks": textbook_list})
+
 
 @app.route("/create_textbook", methods=["POST"])
 def create_textbook():
@@ -177,11 +187,12 @@ def create_textbook():
     #     textbook_price or not course_id or not professor_id):
     #     return jsonify({"message": "All fields are required!"}), 400
     if not textbook_name or not textbook_author or not textbook_price:
-        return jsonify({"message": "test1"}), 400
+        return jsonify({"message": "Textbook name, author, and price are required!"}), 400
     if not course_id:
-        return jsonify({"message": "course"}), 400
+        return jsonify({"message": "Course ID is required!"}), 400
     if not professor_id:
-        return jsonify({"message": "professor"}), 400
+        return jsonify({"message": "Professor ID is required!"}), 400
+
     
     new_textbook = Textbook(
         textbook_name = textbook_name,
@@ -213,8 +224,13 @@ def update_textbook(textbook_id):
     textbook.course_id = data.get("courseId", textbook.course_id)
     textbook.professor_id = data.get("professorId", textbook.professor_id)
 
-    db.session.commit()
-    return jsonify({"message": "Textbook updated."}), 200
+    try:
+        db.session.commit()
+        return jsonify({"message": "Textbook updated."}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error updating textbook", "error": str(e)}), 500
+
 
 @app.route("/delete_textbook/<int:textbook_id>", methods=["DELETE"])
 def delete_textbook(textbook_id):
