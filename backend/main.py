@@ -36,7 +36,7 @@ def create_professor():
 # Update a professor's name
 @app.route("/update_professor/<int:professor_id>", methods=["PATCH"])
 def update_professor(professor_id):
-    professor = Professor.query.get(professor_id)
+    professor = db.session.get(Professor, professor_id)
 
     if not professor:
         return jsonify({"message": "Professor not found"}), 404
@@ -53,7 +53,7 @@ def update_professor(professor_id):
 # Delete a professor
 @app.route("/delete_professor/<int:professor_id>", methods=["DELETE"]) 
 def delete_professor(professor_id):
-    professor = Professor.query.get(professor_id)
+    professor = db.session.get(Professor, professor_id)
 
     if not professor:
         return jsonify({"message": "Professor not found"}), 404
@@ -96,7 +96,7 @@ def create_course():
 # Update Course
 @app.route("/update_course/<int:course_id>", methods=["PATCH"])
 def update_course(course_id):
-    course = Course.query.get(course_id)
+    course = db.session.get(Course, course_id)
 
     if not course:
         return jsonify({"message": "Course not found"})
@@ -112,7 +112,7 @@ def update_course(course_id):
 # Delete course
 @app.route("/delete_course/<int:course_id>", methods=["DELETE"])
 def delete_course(course_id):
-    course = Course.query.get(course_id)
+    course = db.session.get(Course, course_id)
 
     if not course:
         return jsonify({"message": "Course not found"}), 404
@@ -176,43 +176,53 @@ def get_textbooks():
 
 @app.route("/create_textbook", methods=["POST"])
 def create_textbook():
-    textbook_name = request.json.get("textbookName")
-    textbook_author = request.json.get("textbookAuthor")
-    textbook_condition = request.json.get("textbookCondition")
-    textbook_price = request.json.get("textbookPrice")
-    course_id = request.json.get("courseId")
-    professor_id = request.json.get("professorId")
+    data = request.get_json()
 
-    # if (not textbook_name or not textbook_author or not 
-    #     textbook_price or not course_id or not professor_id):
-    #     return jsonify({"message": "All fields are required!"}), 400
-    if not textbook_name or not textbook_author or not textbook_price:
-        return jsonify({"message": "Textbook name, author, and price are required!"}), 400
-    if not course_id:
-        return jsonify({"message": "Course ID is required!"}), 400
-    if not professor_id:
-        return jsonify({"message": "Professor ID is required!"}), 400
+    # Validate required fields
+    required_fields = ["textbookName", "textbookAuthor", "textbookPrice", "courseId", "professorId"]
+    for field in required_fields:
+        if not data.get(field):
+            return jsonify({"message": f"Missing required field: {field}"}), 400
 
-    
-    new_textbook = Textbook(
-        textbook_name = textbook_name,
-        textbook_author = textbook_author,
-        textbook_condition = textbook_condition,
-        textbook_price = textbook_price,
-        course_id = course_id,
-        professor_id = professor_id
-    )
+    # Ensure course and professor exist
+    course = db.session.get(Course, data["courseId"])
+    professor = db.session.get(Professor, data["professorId"])
 
+    if not course:
+        return jsonify({"message": f"Course ID {data['courseId']} not found"}), 400
+    if not professor:
+        return jsonify({"message": f"Professor ID {data['professorId']} not found"}), 400
+
+    # Convert and validate price
     try:
+        textbook_price = float(data["textbookPrice"])
+    except ValueError:
+        return jsonify({"message": "Invalid price format"}), 400
+
+    # Create new textbook entry
+    try:
+        new_textbook = Textbook(
+            textbook_name=data["textbookName"],
+            textbook_author=data["textbookAuthor"],
+            textbook_condition=data["textbookCondition"],
+            textbook_price=textbook_price,
+            course_id=data["courseId"],
+            professor_id=data["professorId"]
+        )
+        
         db.session.add(new_textbook)
         db.session.commit()
-        return jsonify({"message": "Course created!"}), 201
+
+        return jsonify({"message": "Textbook added successfully!", "id": new_textbook.id}), 201
+
     except Exception as e:
+        db.session.rollback()
         return jsonify({"message": "Error adding textbook", "error": str(e)}), 500
+
 
 @app.route("/update_textbook/<int:textbook_id>", methods=["PATCH"])
 def update_textbook(textbook_id):
-    textbook = Textbook.query.get(textbook_id)
+    textbook = db.session.get(Textbook, textbook_id)
 
     if not textbook:
         return jsonify({"message": "Textbook not found"}), 404
@@ -234,7 +244,7 @@ def update_textbook(textbook_id):
 
 @app.route("/delete_textbook/<int:textbook_id>", methods=["DELETE"])
 def delete_textbook(textbook_id):
-    textbook = Textbook.query.get(textbook_id)
+    textbook = db.session.get(Textbook, textbook_id)
 
     if not textbook:
         return jsonify({"message": "Textbook not found"}), 404
@@ -244,9 +254,9 @@ def delete_textbook(textbook_id):
 
     return jsonify({"message": "Textbook deleted!"}), 200
 
-with app.app_context():
-    db.create_all()
 
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
 
     app.run(debug=True)
