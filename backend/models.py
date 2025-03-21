@@ -57,3 +57,16 @@ class Textbook(db.Model):
             "courseId": self.course_id,
             "professorId": self.professor_id
         }
+    
+class User(db.Model):
+    __tablename__ = "user"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), nullable=False)
+    password = db.Column(db.String(80), nullable=True)
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "password": self.password
+        }

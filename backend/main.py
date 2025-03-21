@@ -1,7 +1,10 @@
 from flask import request, jsonify
-from config import app, db
-from models import Textbook, Professor, Course
+from config import app, db, jwt
+from models import Textbook, Professor, Course, User
 from sqlalchemy import text
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from werkzeug.security import generate_password_hash, check_password_hash
+import bcrypt
 
 
 # Professor commands
@@ -100,7 +103,7 @@ def update_course(course_id):
     course = db.session.get(Course, course_id)
 
     if not course:
-        return jsonify({"message": "Course not found"})
+        return jsonify({"message": "Course not found"}), 404
     
     data = request.json
     course.course_subject = data.get("courseSubject", course.course_subject)
@@ -202,7 +205,7 @@ def create_textbook():
 
     print(data["courseId"])
     print(data["professorId"])
-    
+
     # Create new textbook entry
     try:
         new_textbook = Textbook(
@@ -253,10 +256,14 @@ def delete_textbook(textbook_id):
     if not textbook:
         return jsonify({"message": "Textbook not found"}), 404
 
-    db.session.delete(textbook)
-    db.session.commit()
+    try:
+        db.session.delete(textbook)
+        db.session.commit()
+        return jsonify({"message": "Textbook deleted!"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error deleting textbook", "error": str(e)}), 500
 
-    return jsonify({"message": "Textbook deleted!"}), 200
 
 def reset_database():
     meta = db.metadata
@@ -264,6 +271,93 @@ def reset_database():
         for table in reversed(meta.sorted_tables):
             db.session.execute(table.delete())  # Delete all records from each table
     db.session.commit()
+
+# USER RESTFUL
+@app.route("/users", methods=["GET"])
+def get_users():
+    users = User.query.all()
+    json_users = [user.to_json() for user in users]
+
+    return jsonify({"courses": json_users})
+
+@app.route("/create_user", methods=["POST"])
+def create_user():
+    username = request.get_json("username")
+    password = request.get_json("password")
+
+    if not username:
+        return jsonify({"message": "Please enter a username!"}), 400
+    
+    query = db.session.query(User.username).filter(User.username == username).first()
+    if query:
+        return jsonify({"message": "User is already in the database!"}), 409
+
+    hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()) if password else None
+    user = User(username=username, password=hashed_pw.decode('utf-8') if hashed_pw else None)
+
+    try:
+        db.session.add(user)
+        db.session.commit()
+        return jsonify({"message": "User created successfully"}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error adding user", "error": str(e)}), 500
+    
+@app.route("/update_user/<int:user_id>", methods=["POST"])
+def update_user(user_id):
+    user = db.session.get(user_id)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    data = request.json
+
+    user.username = data["username"]
+    user.password = data["password"]
+
+    try:
+        db.session.commit()
+        return jsonify({"message": "User updated."}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error updating User", "error": str(e)}), 500
+
+@app.route("/delete_user/<int:user_id>", methods=["DELETE"])
+def delete_user(user_id):
+    user = db.session.get(user_id)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    try:   
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({"message": "User deleted."}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error deleting User", "error":str(e)}), 500
+
+# USER AUTHENICATION
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+
+    user = User.query.filter_by(username=username).first()
+
+    if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+        access_token = create_access_token(identity=username)
+        return jsonify(access_token=access_token), 200
+
+    return jsonify({"msg": "Bad username or password"}), 401
+
+
+@app.route('/protected', methods=['GET'])
+@jwt_required()
+def protected():
+    current_user = get_jwt_identity()
+    return jsonify({"logged_in_as": current_user}), 200
 
 if __name__ == "__main__":
     with app.app_context():
