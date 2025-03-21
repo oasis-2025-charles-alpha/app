@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from config import app, db, jwt
-from models import Textbook, Professor, Course, User
+from models import Textbook, Professor, Course, User, College
 from sqlalchemy import text
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -285,12 +285,13 @@ def get_users():
     users = User.query.all()
     json_users = [user.to_json() for user in users]
 
-    return jsonify({"courses": json_users})
+    return jsonify({"users": json_users})
 
 @app.route("/create_user", methods=["POST"])
 def create_user():
-    username = request.get_json("username")
-    password = request.get_json("password")
+    data = request.get_json
+    username = data.get("username")
+    password_hash = data.get("password_hash")
 
     if not username:
         return jsonify({"message": "Please enter a username!"}), 400
@@ -299,8 +300,8 @@ def create_user():
     if query:
         return jsonify({"message": "User is already in the database!"}), 409
 
-    hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()) if password else None
-    user = User(username=username, password=hashed_pw.decode('utf-8') if hashed_pw else None)
+    hashed_pw = bcrypt.hashpw(password_hash.encode('utf-8'), bcrypt.gensalt()) if password_hash else None
+    user = User(username=username, password_hash=hashed_pw.decode('utf-8') if hashed_pw else None)
 
     try:
         db.session.add(user)
@@ -312,22 +313,24 @@ def create_user():
     
 @app.route("/update_user/<int:user_id>", methods=["POST"])
 def update_user(user_id):
-    user = db.session.get(user_id)
+    user = db.session.get(User, user_id)  # <-- Fix here
 
     if not user:
         return jsonify({"message": "User not found"}), 404
 
     data = request.json
-
-    user.username = data["username"]
-    user.password = data["password"]
+    user.username = data.get("username", user.username)
+    
+    if data.get("password"):
+        hashed_pw = bcrypt.hashpw(data["password"].encode("utf-8"), bcrypt.gensalt())
+        user.password = hashed_pw.decode("utf-8")
 
     try:
         db.session.commit()
         return jsonify({"message": "User updated."}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({"message": "Error updating User", "error": str(e)}), 500
+        return jsonify({"message": "Error updating user", "error": str(e)}), 500
 
 @app.route("/delete_user/<int:user_id>", methods=["DELETE"])
 def delete_user(user_id):
@@ -343,6 +346,20 @@ def delete_user(user_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "Error deleting User", "error":str(e)}), 500
+
+# College DB
+@app.route('/colleges', methods['GET'])
+def get_colleges():
+    colleges = College.query.all()
+    json_colleges = [college.to_json() for college in colleges]
+
+    return jsonify({"colleges": json_colleges})
+
+@app.route('/create_college', methods=['POST'])
+def create_college():
+    data = request.json
+    college_name = data.get("collegeName")
+    
 
 # USER AUTHENICATION
 @app.route('/login', methods=['POST'])

@@ -1,5 +1,6 @@
 from config import db
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class Course(db.Model):
     __tablename__ = "courses"
@@ -9,6 +10,7 @@ class Course(db.Model):
 
     # Relationship to Textbook (one-to-many)
     textbooks = db.relationship("Textbook", backref="course", lazy=True)
+    college = db.relationship("College", backref="courses", lazy=False)
 
     def to_json(self):
         return {
@@ -62,11 +64,28 @@ class User(db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
-    password = db.Column(db.String(80), nullable=True)
+    password_hash = db.Column(db.String(80), nullable=True)
 
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    
     def to_json(self):
         return {
             "id": self.id,
             "username": self.username,
-            "password": self.password
+            "passwordHash": self.password_hash
+        }
+    
+class College(db.Model):
+    __tablename__ = "college"
+    id = db.Column(db.Integer, primary_key=True)
+    college_name = db.Column(db.String(80), nullable=False)
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "college_name": self.college_name
         }
