@@ -1,29 +1,28 @@
-import { useState } from 'react';
 import { useLikes } from '../context/LikesContext';
+import { useState } from 'react';
 function BookCard({ book }) {
     const { toggleLike, likedBooks } = useLikes();
     const isLiked = likedBooks.some(b => b.id === book.id);
-    if (! book?.id) {
-        return null;
-    }
+    
     return (
         <div className="book-card">
-            <button 
-                className={`like-btn ${isLiked ? 'liked' : ''}`}
-                onClick={() => toggleLike(book)}>
+            <button className={`like-btn ${isLiked ? 'liked' : ''}`} onClick={() => toggleLike(book)}>
                 ♥
             </button>
             
-            <img src={book.imageUrl} alt={book.title} className="book-image" />
+            <img src={book.imageUrl} alt={book.textbook_name} className="book-image" />
             <div className="book-details">
-                <h3 className="book-title">{book.title}</h3>
-                <p className="book-author">{book.author}</p>
+                <h3 className="book-title">{book.textbook_name}</h3>
+                <p className="book-author">{book.textbook_author}</p>
                 <div className="price-condition">
-                    <span className="book-price">${book.price}</span>
-                    <span className="book-condition">{book.condition}</span>
+                    <span className="book-price">${book.textbook_price}</span>
+                    <span className="book-condition">{book.textbook_condition}</span>
                 </div>
-                <div className="book-college">
-                    {book.college}
+                <div className="course-info">
+                    <span>{book.course_subject} {book.course_number}</span>
+                </div>
+                <div className="professor-info">
+                    Professor: {book.professor_fname} {book.professor_lname}
                 </div>
             </div>
         </div>

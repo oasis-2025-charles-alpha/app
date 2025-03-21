@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 function FilterBar({ 
     onSortChange, 
     onConditionChange, 
@@ -9,15 +10,11 @@ function FilterBar({
     onMinPriceChange,
     onMaxPriceChange,
     minPrice,
-    maxPrice
+    maxPrice,
+    courses
 }) {
 
-    const courseCategories = [
-        'MATH', 'CS', 'BIOL', 'CHEM',
-        'PHYS', 'ENG', 'ECON', 'HIST',
-        'PSYC', 'SOCL', 'PHIL', 'ARTG',
-        'MUSC', 'THTR', 'BUSN', 'ACCT'
-    ];
+    const [courseCategories, setCourseCategories] = useState([]);
 
     // const [courseCategories, setCourseCategories] = useState([])
 
@@ -32,7 +29,12 @@ function FilterBar({
     //     }
     //     fetchCourses()
     // }, [])
-
+    useEffect(() => {
+        if (courses && courses.length > 0) {
+            const uniqueSubjects = [...new Set(courses.map(course => course.course_subject))];
+            setCourseCategories(uniqueSubjects);
+        }
+    }, [courses]);
 
     return (
         <div className="filter-container">
