@@ -10,7 +10,7 @@ const Protected = () => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/protected', {
+        const response = await axios.get('http://127.0.0.1:5000/protected', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setMessage(response.data.logged_in_as);
