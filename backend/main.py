@@ -142,6 +142,7 @@ def get_textbooks():
         Textbook.textbook_author,
         Textbook.textbook_price,
         Textbook.textbook_condition,
+        Textbook.textbook_image,
         Course.course_subject,
         Course.course_number,
         Professor.professor_fname,
@@ -170,6 +171,7 @@ def get_textbooks():
             "textbook_author": textbook.textbook_author,
             "textbook_price": textbook.textbook_price,
             "textbook_condition": textbook.textbook_condition,
+            "textbook_image": textbook.textbook_image,
             "course_subject": textbook.course_subject,
             "course_number": textbook.course_number,
             "professor_fname": textbook.professor_fname,
@@ -215,6 +217,7 @@ def create_textbook():
             textbook_name=data["textbookName"],
             textbook_author=data["textbookAuthor"],
             textbook_condition=data["textbookCondition"],
+            textbook_image=data["textbookImage"],
             textbook_price=textbook_price,
             course_id=data["courseId"],
             professor_id=data["professorId"]
@@ -241,6 +244,7 @@ def update_textbook(textbook_id):
     textbook.textbook_name = data.get("textbookName", textbook.textbook_name)
     textbook.textbook_author = data.get("textbookAuthor", textbook.textbook_author)
     textbook.textbook_condition = data.get("textbookCondition", textbook.textbook_condition)
+    textbook.textbook_image = data.get("textbookImage", textbook.textbook_image)
     textbook.course_id = data.get("courseId", textbook.course_id)
     textbook.professor_id = data.get("professorId", textbook.professor_id)
 

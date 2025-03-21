@@ -16,8 +16,6 @@ class Course(db.Model):
             "courseSubject": self.course_subject,
             "courseNumber": self.course_number
         }
-        
-
 
 class Professor(db.Model):
     __tablename__ = "professors"
@@ -42,6 +40,7 @@ class Textbook(db.Model):
     textbook_author = db.Column(db.String(100), nullable=False)
     textbook_condition = db.Column(db.String(20), nullable=False)
     textbook_price = db.Column(db.Float, nullable=False)
+    textbook_image = db.Column(db.String(800), nullable=True)
 
     # Foreign Keys (Many-to-One)
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
@@ -54,6 +53,7 @@ class Textbook(db.Model):
             "textbookAuthor": self.textbook_author,
             "textbookCondition": self.textbook_condition,
             "textbookPrice": self.textbook_price,
+            "textbookImage": self.textbook_image,
             "courseId": self.course_id,
             "professorId": self.professor_id
         }
