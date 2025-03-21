@@ -129,6 +129,7 @@ def delete_course(course_id):
 # Get all textbooks (with optional filters for course_id & professor_id)
 @app.route("/textbooks", methods=["GET"])
 def get_textbooks():
+
     course_id = request.args.get("courseId", type=int)
     professor_id = request.args.get("professorId", type=int)
     textbook_price = request.args.get("textbookPrice", type=float)
@@ -136,6 +137,7 @@ def get_textbooks():
 
     # Start the query by joining necessary tables
     query = db.session.query(
+        Textbook.id,
         Textbook.textbook_name,
         Textbook.textbook_author,
         Textbook.textbook_price,
@@ -163,6 +165,7 @@ def get_textbooks():
     # Convert results to a list of dictionaries
     textbook_list = [
         {
+            "id": textbook.id,
             "textbook_name": textbook.textbook_name,
             "textbook_author": textbook.textbook_author,
             "textbook_price": textbook.textbook_price,
