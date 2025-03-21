@@ -3,6 +3,7 @@ from config import app, db
 from models import Textbook, Professor, Course
 from sqlalchemy import text
 
+
 # Professor commands
 # Get all Professors
 @app.route("/professors", methods=["GET"])
@@ -199,6 +200,9 @@ def create_textbook():
     except ValueError:
         return jsonify({"message": "Invalid price format"}), 400
 
+    print(data["courseId"])
+    print(data["professorId"])
+    
     # Create new textbook entry
     try:
         new_textbook = Textbook(
@@ -254,9 +258,16 @@ def delete_textbook(textbook_id):
 
     return jsonify({"message": "Textbook deleted!"}), 200
 
+def reset_database():
+    meta = db.metadata
+    with db.session.begin():
+        for table in reversed(meta.sorted_tables):
+            db.session.execute(table.delete())  # Delete all records from each table
+    db.session.commit()
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
+        #reset_database()
 
     app.run(debug=True)
