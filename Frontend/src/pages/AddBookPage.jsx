@@ -60,7 +60,7 @@ const AddBookPage = () => {
                 })
 
                 const collegeResult = await collegeResponse.json()
-                if (!collegeResposne.ok) {
+                if (!collegeResponse.ok) {
                     alert(collegeResult.message)
                     return
                 }
@@ -121,6 +121,7 @@ const AddBookPage = () => {
                 textbookAuthor: formData.textbookAuthor,
                 textbookCondition: formData.textbookCondition,
                 textbookPrice: parseFloat(formData.textbookPrice),  // Ensure price is a number
+                textbookImage: "__",
                 courseId: parseInt(courseId, 10),  // Ensure courseId is an integer
                 professorId: parseInt(professorId, 10)  // Ensure professorId is an integer
             };

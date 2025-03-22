@@ -271,7 +271,7 @@ def get_textbooks():
 
 
 @app.route("/create_textbook", methods=["POST"])
-@jwt_required()
+#@jwt_required()
 def create_textbook():
     data = request.get_json()
 
@@ -296,12 +296,7 @@ def create_textbook():
     except ValueError:
         return jsonify({"message": "Invalid price format"}), 400
 
-    print(data["courseId"])
-    print(data["professorId"])
-
-    # Create new textbook entry
-    try:
-        new_textbook = Textbook(
+    new_textbook = Textbook(
             textbook_name=data["textbookName"],
             textbook_author=data["textbookAuthor"],
             textbook_condition=data["textbookCondition"],
@@ -311,6 +306,8 @@ def create_textbook():
             professor_id=data["professorId"]
         )
         
+    # Create new textbook entry
+    try:
         db.session.add(new_textbook)
         db.session.commit()
 
@@ -359,14 +356,6 @@ def delete_textbook(textbook_id):
         db.session.rollback()
         return jsonify({"message": "Error deleting textbook", "error": str(e)}), 500
 
-
-def reset_database():
-    meta = db.metadata
-    with db.session.begin():
-        for table in reversed(meta.sorted_tables):
-            db.session.execute(table.delete())  # Delete all records from each table
-    db.session.commit()
-
 # USER RESTFUL
 @app.route("/users", methods=["GET"])
 def get_users():
@@ -376,7 +365,7 @@ def get_users():
     return jsonify({"users": json_users})
 
 @app.route("/create_user", methods=["POST"])
-@jwt_required()
+#@jwt_required()
 def create_user():
     data = request.get_json()
     username = data.get("username")
@@ -443,7 +432,6 @@ def delete_user(user_id):
 
 # USER AUTHENICATION
 @app.route('/login', methods=['POST'])
-@app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
     username = data.get("username")
@@ -475,6 +463,5 @@ def protected():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-        #reset_database()
 
     app.run(debug=True)

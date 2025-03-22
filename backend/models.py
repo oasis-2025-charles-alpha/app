@@ -42,6 +42,7 @@ class Textbook(db.Model):
     textbook_name = db.Column(db.String(100), nullable=False)
     textbook_author = db.Column(db.String(100), nullable=False)
     textbook_condition = db.Column(db.String(20), nullable=False)
+    textbook_image = db.Column(db.String(255), nullable=False)
     textbook_price = db.Column(db.Float, nullable=False)
     textbook_image = db.Column(db.String(800), nullable=True)
 
