@@ -380,41 +380,46 @@ def get_users():
 @app.route("/create_user", methods=["POST"])
 @jwt_required()
 def create_user():
-    data = request.json
+    data = request.get_json()
     username = data.get("username")
-    password_hash = data.get("password_hash")
+    password = data.get("password")  # Can be None
 
     if not username:
         return jsonify({"message": "Please enter a username!"}), 400
-    
-    query = db.session.query(User.username).filter(User.username == username).first()
-    if query:
+
+    if User.query.filter_by(username=username).first():
         return jsonify({"message": "User is already in the database!"}), 409
 
-    hashed_pw = bcrypt.hashpw(password_hash.encode('utf-8'), bcrypt.gensalt()) if password_hash else None
-    user = User(username=username, password_hash=hashed_pw.decode('utf-8') if hashed_pw else None)
+    # Handle optional password
+    password_hash = generate_password_hash(password) if password else None
+
+    new_user = User(username=username, password_hash=password_hash)
 
     try:
-        db.session.add(user)
+        db.session.add(new_user)
         db.session.commit()
         return jsonify({"message": "User created successfully"}), 201
     except Exception as e:
         db.session.rollback()
-        return jsonify({"message": "Error adding user", "error": str(e)}), 500
+        return jsonify({"message": "Error creating user", "error": str(e)}), 500
+
     
 @app.route("/update_user/<int:user_id>", methods=["POST"])
 def update_user(user_id):
-    user = db.session.get(User, user_id)  # <-- Fix here
+    user = db.session.get(User, user_id)
 
     if not user:
         return jsonify({"message": "User not found"}), 404
 
-    data = request.json
+    data = request.get_json()
     user.username = data.get("username", user.username)
-    
-    if data.get("password"):
-        hashed_pw = bcrypt.hashpw(data["password"].encode("utf-8"), bcrypt.gensalt())
-        user.password_hash = hashed_pw.decode("utf-8")
+
+    new_password = data.get("password")
+    if new_password:
+        user.password_hash = generate_password_hash(new_password)
+    elif new_password == "":
+        # Clear the password if explicitly empty string
+        user.password_hash = None
 
     try:
         db.session.commit()
@@ -440,19 +445,28 @@ def delete_user(user_id):
 
 # USER AUTHENICATION
 @app.route('/login', methods=['POST'])
+@app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
 
+    if not username:
+        return jsonify({"msg": "Username is required."}), 400
+
     user = User.query.filter_by(username=username).first()
 
-    if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+    # If user exists but doesn't require a password
+    if user and user.password_hash is None:
+        access_token = create_access_token(identity=username)
+        return jsonify(access_token=access_token, note="This account has no password."), 200
+
+    # If user has a password and matches it
+    if user and check_password_hash(user.password_hash, password):
         access_token = create_access_token(identity=username)
         return jsonify(access_token=access_token), 200
 
-    return jsonify({"msg": "Bad username or password"}), 401
-
+    return jsonify({"msg": "Invalid username or password."}), 401
 
 @app.route('/protected', methods=['GET'])
 @jwt_required()
