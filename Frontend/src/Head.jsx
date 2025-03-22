@@ -1,39 +1,54 @@
-import { Link } from 'react-router-dom';
-import { useLikes } from './context/LikesContext';
+import React from "react";
+import { Link } from "react-router-dom"; // Import Link
+import { useLikes } from "./context/LikesContext";
 
-function Head({ searchQuery = '', onSearchChange = () => {} }) { 
-    const { likedBooks } = useLikes();
-    
-    return (
-        <header className="flex items-center justify-between w-full">
-            <nav className="flex items-center gap-4 p-2 flex-1">
-                <div className="logo">Xiaobin's BookStore</div>
-                <form action="#" id="search-form">
-                    <input 
-                        type="text" 
-                        placeholder="Search books..." 
-                        className="search-bar" 
-                        value={searchQuery}
-                        onChange={(e) => onSearchChange(e.target.value)}
-                    />
-                </form>
-            </nav>
+function Head({ isLoggedIn, onLogout, searchQuery, onSearchChange }) {
+  const { likedBooks } = useLikes();
 
-            <Link to="/add-book" className="add-book-btn">
-            + Add Book + 
+  return (
+    <header className="flex items-center justify-between w-full p-4 bg-gray-800 text-white">
+      <nav className="flex items-center gap-4 flex-1">
+        {/* Link to home page */}
+        <div className="logo font-bold text-xl">
+          <Link to="/">Xiaobin's BookStore</Link> {/* Link to home page */}
+        </div>
+        <form action="#" id="search-form">
+          <input
+            type="text"
+            placeholder="Search books..."
+            className="search-bar p-2 rounded text-black"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+          />
+        </form>
+      </nav>
+
+      {/* Link to Add Book page */}
+      <Link to="/add-book" className="add-book-btn bg-blue-500 p-2 rounded">
+        + Add Book +
+      </Link>
+
+      <nav className="flex items-center gap-4">
+        <div className="user-actions flex items-center gap-2">
+          <Link to="/likes" className="likes-btn bg-green-500 p-2 rounded">
+            Likes ({likedBooks.length})
+          </Link>
+          {isLoggedIn ? (
+            <button
+              onClick={onLogout}
+              className="logout-btn bg-red-500 p-2 rounded"
+            >
+              Log Out
+            </button>
+          ) : (
+            <Link to="/login" className="login-btn bg-blue-500 p-2 rounded">
+              Log In
             </Link>
-            
-            <nav className="flex items-center gap-4 p-2">
-                <div className="user-actions flex items-center gap-2">
-                    <Link to="/likes" className="likes-btn">
-                        Likes ({likedBooks.length})
-                    </Link>
-                    <button className="cart-btn">Cart</button>
-                </div>
-                <button className="login-btn">Log in</button>
-            </nav>
-        </header>
-    );
+          )}
+        </div>
+      </nav>
+    </header>
+  );
 }
 
 export default Head;

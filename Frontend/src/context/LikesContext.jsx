@@ -8,10 +8,12 @@ export function LikesProvider({ children }) {
         return saved ? JSON.parse(saved) : [];
     });
 
+    // Save likedBooks to localStorage whenever it changes
     useEffect(() => {
         localStorage.setItem('likedBooks', JSON.stringify(likedBooks));
     }, [likedBooks]);
 
+    // Function to toggle like/unlike a book
     const toggleLike = (book) => {
         setLikedBooks(prev => {
             // Check if the book is already liked
@@ -26,8 +28,14 @@ export function LikesProvider({ children }) {
         });
     };
 
+    // Function to reset likedBooks
+    const resetLikedBooks = () => {
+        setLikedBooks([]); // Clear the likedBooks state
+        localStorage.removeItem('likedBooks'); // Remove likedBooks from localStorage
+    };
+
     return (
-        <LikesContext.Provider value={{ likedBooks, toggleLike }}>
+        <LikesContext.Provider value={{ likedBooks, toggleLike, resetLikedBooks }}>
             {children}
         </LikesContext.Provider>
     );

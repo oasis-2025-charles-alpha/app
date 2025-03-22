@@ -13,7 +13,6 @@ const AddBookPage = () => {
         courseId: "",
         courseSubject: "",
         courseNumber: "",
-        collegeId: "",
         collegeName: "",
         professorId: "",
         professorFname: "",
@@ -22,6 +21,8 @@ const AddBookPage = () => {
 
     const [courses, setCourses] = useState([]);
     const [professors, setProfessors] = useState([]);
+
+    // Hardcoded list of colleges
     const collegeOptions = [
         "Khoury College",
         "School of Law",
@@ -48,7 +49,6 @@ const AddBookPage = () => {
 
                 setCourses(coursesData.courses);
                 setProfessors(professorsData.professors);
-                setColleges(collegesData.colleges);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -56,17 +56,17 @@ const AddBookPage = () => {
         fetchData();
     }, []);
 
-
     const onSubmit = async (e) => {
         e.preventDefault();
 
         try {
             let professorId = formData.professorId;
             let courseId = formData.courseId;
-            let collegeName = formData.collegeName;
+            const collegeName = formData.collegeName;
 
             const courseSubject = formData.courseSubject.toUpperCase();
 
+            // Validate course number
             if (!formData.courseId && formData.courseNumber) {
                 if (!/^\d{4}$/.test(formData.courseNumber)) {
                     alert("Course number must be 4 digits");
@@ -74,12 +74,13 @@ const AddBookPage = () => {
                 }
             }
 
-            // College creation logic
+            // Validate college selection
             if (!collegeName) {
                 alert("Please select a college");
                 return;
             }
 
+            // College creation logic
             const collegeResponse = await fetch("http://127.0.0.1:5000/create_college", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -246,21 +247,21 @@ const AddBookPage = () => {
                 </div>
 
                 <div className="form-group">
-                <label>College:</label>
-                <select 
-                    name="collegeName" 
-                    value={formData.collegeName} 
-                    onChange={handleChange}
-                    required
-                >
-                    <option value="">Select College</option>
-                    {collegeOptions.map(college => (
-                        <option key={college} value={college}>
-                            {college}
-                        </option>
-                    ))}
-                </select>
-            </div>
+                    <label>College:</label>
+                    <select 
+                        name="collegeName" 
+                        value={formData.collegeName} 
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="">Select College</option>
+                        {collegeOptions.map(college => (
+                            <option key={college} value={college}>
+                                {college}
+                            </option>
+                        ))}
+                    </select>
+                </div>
 
                 <div className="form-group">
                     <label>Professor:</label>

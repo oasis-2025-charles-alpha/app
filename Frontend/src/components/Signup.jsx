@@ -1,44 +1,61 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
-const Signup = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+function Signup({ onLogin }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await axios.post('http://127.0.0.1:5000/create_user', {
-        username,
-        password,
-      });
-      navigate('/login'); // Redirect to the login page after signup
-    } catch (error) {
-      console.error('Signup failed:', error.response?.data?.message || error.message);
+    // Simulate signup logic
+    if (username && password) {
+      // Store user credentials in localStorage
+      localStorage.setItem("userCredentials", JSON.stringify({ username, password }));
+      onLogin(); // Automatically log in after signup
+      navigate("/protected"); // Redirect to protected page
+    } else {
+      setError("Please fill in all fields");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <button type="submit">Sign Up</button>
-    </form>
+    <div className="flex justify-center items-center h-screen">
+      <form onSubmit={handleSubmit} className="bg-gray-100 p-8 rounded shadow">
+        <h2 className="text-2xl mb-4">Sign Up</h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="block w-full p-2 mb-4 border rounded"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="block w-full p-2 mb-4 border rounded"
+          required
+        />
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white p-2 rounded"
+        >
+          Sign Up
+        </button>
+        <p className="mt-4 text-center">
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-500 hover:underline">
+            Log in
+          </Link>
+        </p>
+      </form>
+    </div>
   );
-};
+}
 
 export default Signup;

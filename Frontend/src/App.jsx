@@ -1,37 +1,77 @@
-import './App.css'
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from './pages/Home';
-import Sell from './pages/Sell';
-import { LikesProvider } from './context/LikesContext';
-import LikesList from './pages/LikesList';
-import AddBookPage from './pages/AddBookPage';
-import Login from './components/Login'; 
-import Signup from './components/Login';
-import Protected from './components/Login';
-import Navbar from './components/Login';
-import { RefreshProvider } from './context/RefreshContext';
-
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import Home from "./pages/Home";
+import Sell from "./pages/Sell";
+import { LikesProvider } from "./context/LikesContext"; // Import LikesProvider
+import LikesList from "./pages/LikesList";
+import AddBookPage from "./pages/AddBookPage";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import ProtectedPage from "./components/ProtectedPage";
+import { RefreshProvider } from "./context/RefreshContext";
+import Head from "./Head";
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Check localStorage for login state on initial render
+  useEffect(() => {
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    if (loggedIn) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    localStorage.setItem("isLoggedIn", "true"); // Persist login state
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem("isLoggedIn"); // Clear login state
+  };
+
   return (
-    <>
     <RefreshProvider>
-    <LikesProvider>
-      <Router>
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='sell' element={<Sell />} />
-          <Route path='/likes' element={<LikesList />} />
-          <Route path="/add-book" element={<AddBookPage />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/signup' element={<Signup />} />
-          <Route path='/protected' element={<Protected />} />
-        </Routes>
-      </Router>
-    </LikesProvider>
+      <LikesProvider>
+        <Router>
+          {/* Render Head only once here */}
+          <Head
+            isLoggedIn={isLoggedIn}
+            onLogout={handleLogout}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+          <Routes>
+            <Route path="/" element={<Home searchQuery={searchQuery} />} />
+            <Route path="/sell" element={<Sell />} />
+            <Route path="/likes" element={<LikesList />} />
+            <Route path="/add-book" element={<AddBookPage />} />
+            <Route
+              path="/login"
+              element={<Login onLogin={handleLogin} />} // Pass handleLogin to Login
+            />
+            <Route
+              path="/signup"
+              element={<Signup onLogin={handleLogin} />} // Pass handleLogin to Signup
+            />
+            <Route
+              path="/protected"
+              element={
+                isLoggedIn ? (
+                  <ProtectedPage />
+                ) : (
+                  <Navigate to="/login" replace /> // Redirect to login if not logged in
+                )
+              }
+            />
+          </Routes>
+        </Router>
+      </LikesProvider>
     </RefreshProvider>
-    </>
-  )
+  );
 }
 
-export default App
+export default App;
