@@ -7,16 +7,17 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     course_subject = db.Column(db.String(10), nullable=False)
     course_number = db.Column(db.String(10), nullable=False)
+    college_id = db.Column(db.Integer, db.ForeignKey("college.id"), nullable=True)
 
     # Relationship to Textbook (one-to-many)
     textbooks = db.relationship("Textbook", backref="course", lazy=True)
-    college = db.relationship("College", backref="courses", lazy=False)
 
     def to_json(self):
         return {
             "id": self.id,
             "courseSubject": self.course_subject,
-            "courseNumber": self.course_number
+            "courseNumber": self.course_number,
+            "collegeId": self.college_id
         }
 
 class Professor(db.Model):
@@ -60,11 +61,24 @@ class Textbook(db.Model):
             "professorId": self.professor_id
         }
     
+class College(db.Model):
+    __tablename__ = "college"
+    id = db.Column(db.Integer, primary_key=True)
+    college_name = db.Column(db.String(80), nullable=False)
+
+    course = db.relationship("Course", backref="courses", lazy=True)
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "college_name": self.college_name
+        }
+    
 class User(db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
-    password_hash = db.Column(db.String(80), nullable=True)
+    password_hash = db.Column(db.String(128), nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -77,15 +91,4 @@ class User(db.Model):
             "id": self.id,
             "username": self.username,
             "passwordHash": self.password_hash
-        }
-    
-class College(db.Model):
-    __tablename__ = "college"
-    id = db.Column(db.Integer, primary_key=True)
-    college_name = db.Column(db.String(80), nullable=False)
-
-    def to_json(self):
-        return {
-            "id": self.id,
-            "college_name": self.college_name
         }

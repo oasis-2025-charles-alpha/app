@@ -18,8 +18,9 @@ def get_professors():
 # Add a professor to the database
 @app.route("/create_professor", methods=["POST"])
 def create_professor():
-    professor_fname = request.json.get("professorFname")
-    professor_lname = request.json.get("professorLname")
+    data = request.json
+    professor_fname = data.get("professorFname")
+    professor_lname = data.get("professorLname")
 
     if not professor_fname or not professor_lname:
         return (
@@ -49,10 +50,12 @@ def update_professor(professor_id):
     professor.professor_fname = data.get("professorFname", professor.professor_fname)
     professor.professor_lname = data.get("professorLname", professor.professor_lname)
 
-
-    db.session.commit()
-
-    return jsonify({"message": "Professor updated."}), 200
+    try:
+        db.session.commit()
+        return jsonify({"message": "Professor updated."}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error updating professor", "error": str(e)}), 500
 
 # Delete a professor
 @app.route("/delete_professor/<int:professor_id>", methods=["DELETE"]) 
@@ -62,12 +65,73 @@ def delete_professor(professor_id):
     if not professor:
         return jsonify({"message": "Professor not found"}), 404
     
-    db.session.delete(professor)
-    db.session.commit()
+    try:
+        db.session.delete(professor)
+        db.session.commit()
+        return jsonify({"message": "Professor deleted!"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error deleting professor", "error": str(e)}), 500
 
-    return jsonify({"message": "Course deleted!"}), 200
+# College DB
+@app.route('/colleges', methods=['GET'])
+def get_colleges():
+    colleges = College.query.all()
+    json_colleges = [college.to_json() for college in colleges]
+    return jsonify({"colleges": json_colleges})
 
+@app.route("/create_college", methods=["POST"])
+def create_college():
+    data = request.json
+    college_name = data.get("collegeName")
 
+    if not college_name:
+        return jsonify({"message": "Please complete all fields"}), 400
+
+    new_college = College(
+        college_name = college_name
+    )
+
+    try:
+        db.session.add(new_college)
+        db.session.commit()
+        return jsonify({"message": "College created!", "id": new_college.id}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error adding course", "error": str(e)}), 500
+    
+@app.route("/update_course/<int:college_id>", methods=["PATCH"])
+def update_college(college_id):
+    college = db.session.get(College, college_id)
+
+    if not college:
+        return jsonify({"message": "College not found"}), 404
+    
+    data = request.json
+    college.college_name = data.get("collegeName", college.college_name)
+
+    try:
+        db.session.commit()
+        return jsonify({"message": "College successfully updated"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error updating course", "error":str(e)}), 500
+    
+@app.route("/delete_course/<int:college_id>", methods=["DELETE"])
+def delete_college(college_id):
+    college = db.session.get(College, college_id)
+
+    if not college:
+        return jsonify({"message": "College not found"}), 404
+    
+    try:   
+        db.session.delete(college)
+        db.session.commit()
+        return jsonify({"message": "College deleted."}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error deleting College", "error":str(e)}), 500
+    
 # Course Commands
 # Get all courses
 @app.route("/courses", methods=["GET"])
@@ -79,22 +143,35 @@ def get_courses():
 # Create Course
 @app.route("/create_course", methods=["POST"])
 def create_course():
-    course_subject = request.json.get("courseSubject")
-    course_number = request.json.get("courseNumber")
+    data = request.json
+    course_subject = data.get("courseSubject")
+    course_number = data.get("courseNumber")
+    college_id = data.get("collegeId")
 
     if not course_number or not course_subject:
         return (
             jsonify({"message": "You must fully complete the form!"}),
             400
         )
+
+    college = db.session.get(College, college_id)
+
+    if not college:
+        return (
+            jsonify({"message": "Please enter a college!"}),
+            400
+        )
     
     new_course = Course(course_subject = course_subject,
-                        course_number = course_number)
+                        course_number = course_number,
+                        college_id = college_id)
+    
     try:
         db.session.add(new_course)
         db.session.commit()
         return jsonify({"message": "Course created!", "id": new_course.id}), 201
     except Exception as e:
+        db.session.rollback()
         return jsonify({"message": "Error adding course", "error": str(e)}), 500
 
 # Update Course
@@ -108,10 +185,14 @@ def update_course(course_id):
     data = request.json
     course.course_subject = data.get("courseSubject", course.course_subject)
     course.course_number = data.get("courseNumber", course.course_number)
+    course.college_id = data.get("courseId", course.college_id)
 
-    db.session.commit()
-
-    return jsonify({"message": "Course updated."}), 200
+    try:
+        db.session.commit()
+        return jsonify({"message": "Course updated."}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error updating course", "error": str(e)}), 500
 
 # Delete course
 @app.route("/delete_course/<int:course_id>", methods=["DELETE"])
@@ -121,18 +202,21 @@ def delete_course(course_id):
     if not course:
         return jsonify({"message": "Course not found"}), 404
     
-    db.session.delete(course)
-    db.session.commit()
-
-    return jsonify({"message": "Course deleted!"}, 200)
+    try:
+        db.session.delete(course)
+        db.session.commit()
+        return jsonify({"message": "Course deleted!"}, 200)
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error deleting course", "error": str(e)}), 500
 
 # Get all textbooks (with optional filters for course_id & professor_id)
 @app.route("/textbooks", methods=["GET"])
 def get_textbooks():
-
     course_id = request.args.get("courseId", type=int)
     professor_id = request.args.get("professorId", type=int)
-    textbook_price = request.args.get("textbookPrice", type=float)
+    textbook_min_price = request.args.get("textbookMinPrice", type=float) 
+    textbook_max_price = request.args.get("textbookMaxPrice", type=float)
     textbook_condition = request.args.get("textbookCondition")
 
     # Start the query by joining necessary tables
@@ -145,9 +229,11 @@ def get_textbooks():
         Textbook.textbook_image,
         Course.course_subject,
         Course.course_number,
+        College.college_name,
         Professor.professor_fname,
         Professor.professor_lname
     ).join(Course, Textbook.course_id == Course.id
+    ).join(College, College.id == Course.college_id
     ).join(Professor, Textbook.professor_id == Professor.id)
 
     # Apply filters if they exist
@@ -155,8 +241,10 @@ def get_textbooks():
         query = query.filter(Course.id == course_id)
     if professor_id:
         query = query.filter(Professor.id == professor_id)
-    if textbook_price:
-        query = query.filter(Textbook.textbook_price == textbook_price)
+    if textbook_min_price:
+        query = query.filter(Textbook.textbook_price >= textbook_min_price)
+    if textbook_max_price:
+        query = query.filter(Textbook.textbook_price <= textbook_max_price)
     if textbook_condition:
         query = query.filter(Textbook.textbook_condition == textbook_condition)
 
@@ -174,6 +262,7 @@ def get_textbooks():
             "textbook_image": textbook.textbook_image,
             "course_subject": textbook.course_subject,
             "course_number": textbook.course_number,
+            "college_name": textbook.college_name,
             "professor_fname": textbook.professor_fname,
             "professor_lname": textbook.professor_lname,
         }
@@ -184,6 +273,7 @@ def get_textbooks():
 
 
 @app.route("/create_textbook", methods=["POST"])
+@jwt_required()
 def create_textbook():
     data = request.get_json()
 
@@ -288,8 +378,9 @@ def get_users():
     return jsonify({"users": json_users})
 
 @app.route("/create_user", methods=["POST"])
+@jwt_required()
 def create_user():
-    data = request.get_json
+    data = request.json
     username = data.get("username")
     password_hash = data.get("password_hash")
 
@@ -323,7 +414,7 @@ def update_user(user_id):
     
     if data.get("password"):
         hashed_pw = bcrypt.hashpw(data["password"].encode("utf-8"), bcrypt.gensalt())
-        user.password = hashed_pw.decode("utf-8")
+        user.password_hash = hashed_pw.decode("utf-8")
 
     try:
         db.session.commit()
@@ -346,20 +437,6 @@ def delete_user(user_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "Error deleting User", "error":str(e)}), 500
-
-# College DB
-@app.route('/colleges', methods['GET'])
-def get_colleges():
-    colleges = College.query.all()
-    json_colleges = [college.to_json() for college in colleges]
-
-    return jsonify({"colleges": json_colleges})
-
-@app.route('/create_college', methods=['POST'])
-def create_college():
-    data = request.json
-    college_name = data.get("collegeName")
-    
 
 # USER AUTHENICATION
 @app.route('/login', methods=['POST'])
