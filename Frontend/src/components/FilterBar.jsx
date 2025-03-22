@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
+
 function FilterBar({ 
     onSortChange, 
-    onConditionChange, 
-    onConditionSearchChange,
-    selectedConditions,
-    conditionSearch, 
+    onCourseSubjectChange, 
+    onCourseSubjectSearchChange,
+    selectedCourseSubjects,
+    courseSubjectSearch, 
     onCollegeChange,
     selectedCollege,
     onMinPriceChange,
@@ -13,22 +14,8 @@ function FilterBar({
     maxPrice,
     courses
 }) {
-
     const [courseCategories, setCourseCategories] = useState([]);
 
-    // const [courseCategories, setCourseCategories] = useState([])
-
-    // useEffect(() => {
-    //     const fetchCourses = async () => {
-    //         try {
-    //             const response = await axios.get('http://127.0.0.1:5000/courses')
-    //             setCourseCategories(response.data)
-    //         } catch (error) {
-    //             console.error('Error fetching data:', error)
-    //         }
-    //     }
-    //     fetchCourses()
-    // }, [])
     useEffect(() => {
         if (courses && courses.length > 0) {
             const uniqueSubjects = [...new Set(courses.map(course => course.course_subject))];
@@ -91,35 +78,34 @@ function FilterBar({
                 </select>
             </div>
 
-            {/* Condition Filter Section */}
-            <div className="condition-filter">
-                <h3>Course Category</h3>
-                <div className="condition-grid">
+            {/* Course Subject Filter Section */}
+            <div className="course-subject-filter">
+                <h3>Course Subject</h3>
+                <div className="subject-grid">
                     {courseCategories
-                        .filter(category => 
-                            category.toLowerCase().includes(conditionSearch.toLowerCase())
+                        .filter(subject => 
+                            subject.toLowerCase().includes(courseSubjectSearch.toLowerCase())
                         )
-                        .map(category => (
-                            <div className="condition-item" key={category}>
+                        .map(subject => (
+                            <div className="subject-item" key={subject}>
                                 <input 
                                     type="checkbox" 
-                                    id={category}
-                                    checked={selectedConditions.includes(category)}
-                                    onChange={(e) => onConditionChange(category, e.target.checked)}
+                                    id={subject}
+                                    checked={selectedCourseSubjects.includes(subject)}
+                                    onChange={(e) => onCourseSubjectChange(subject, e.target.checked)}
                                 />
-                                <label htmlFor={category}>{category}</label>
+                                <label htmlFor={subject}>{subject}</label>
                             </div>
                         ))}
                 </div>
-                <div className="condition-search">
+                <div className="subject-search">
                     <input
                         type="text"
-                        placeholder="Search course category..."
-                        value={conditionSearch}
-                        onChange={(e) => onConditionSearchChange(e.target.value)}
+                        placeholder="Search course subject..."
+                        value={courseSubjectSearch}
+                        onChange={(e) => onCourseSubjectSearchChange(e.target.value)}
                     />
                 </div>
-                
             </div>
         </div>
     );

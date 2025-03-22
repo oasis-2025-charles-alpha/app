@@ -16,9 +16,9 @@ function BookCard({ book }) {
                 <h3 className="book-title">{book.textbook_name}</h3>
                 <p className="book-author">{book.textbook_author}</p>
                 <div className="price-condition">
-                    <span className="book-price">${book.textbook_price}</span>
-                    <span className="book-condition">{book.textbook_condition}</span>
-                </div>
+                <span className="book-price">${book.textbook_price}</span>
+                <span className="course-subject">{book.course_subject} {book.course_number}</span>
+            </div>
                 <div className="course-info">
                     <span>{book.course_subject} {book.course_number}</span>
                 </div>

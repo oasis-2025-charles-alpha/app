@@ -9,6 +9,16 @@ function Home() {
     const [textbooks, setTextbooks] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [fetchError, setFetchError] = useState(null);
+    const [displayedBooks, setDisplayedBooks] = useState([]);
+    
+    // State for filters
+    const [selectedCourseSubjects, setSelectedCourseSubjects] = useState([]);
+    const [courseSubjectSearch, setCourseSubjectSearch] = useState('');
+    const [sortType, setSortType] = useState('');
+    const [selectedCollege, setSelectedCollege] = useState('');
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Fetch textbooks from backend
     useEffect(() => {
@@ -24,62 +34,58 @@ function Home() {
                 setIsLoading(false);
             }
         };
-        
         fetchTextbooks();
     }, []);
 
-    //const [textbook, setTextbook] = useState()
-
-    const [displayedBooks, setDisplayedBooks] = useState([]);
-    const [selectedConditions, setSelectedConditions] = useState([]);
-    const [conditionSearch, setConditionSearch] = useState('');
-    const [sortType, setSortType] = useState('');
-    const [selectedCollege, setSelectedCollege] = useState('');
-    const [minPrice, setMinPrice] = useState('');
-    const [maxPrice, setMaxPrice] = useState('');
-    const [searchQuery, setSearchQuery] = useState('');
-
+    // Filter and sort books
     useEffect(() => {
         let filteredBooks = [...textbooks];
 
-        // Combine checkbox and search filters
         filteredBooks = filteredBooks.filter(book => {
-            const matchesConditions = selectedConditions.length === 0 || 
-                selectedConditions.some(condition => 
-                    book.textbook_condition.toLowerCase() === condition.toLowerCase()
+            // Course subject filters
+            const matchesCourseSubjects = selectedCourseSubjects.length === 0 || 
+                selectedCourseSubjects.some(subject => 
+                    book.course_subject.toLowerCase() === subject.toLowerCase()
                 );
-        
-    const matchesSearch = book.textbook_condition.toLowerCase()
-                .includes(conditionSearch.toLowerCase().trim());
             
-    const matchesCollege = !selectedCollege || 
-                book.college === selectedCollege;
+            const matchesSubjectSearch = book.course_subject.toLowerCase()
+                .includes(courseSubjectSearch.toLowerCase().trim());
+            
+            // College filter
+            const matchesCollege = !selectedCollege || 
+                book.college_name === selectedCollege;
 
-    const price = Number(book.textbook_price);
-    const meetsMin = !minPrice || price >= Number(minPrice);
-    const meetsMax = !maxPrice || price <= Number(maxPrice);
+            // Price range
+            const price = Number(book.textbook_price);
+            const meetsMin = !minPrice || price >= Number(minPrice);
+            const meetsMax = !maxPrice || price <= Number(maxPrice);
 
-    const matchesSearchBig = searchQuery.toLowerCase() === '' || 
+            // General search
+            const matchesSearch = searchQuery.toLowerCase() === '' || 
                 book.textbook_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 book.textbook_author.toLowerCase().includes(searchQuery.toLowerCase());
 
-            return meetsMin && meetsMax && matchesConditions && matchesSearch && matchesSearchBig && matchesCollege;
+            return meetsMin && meetsMax && 
+                   matchesCourseSubjects && 
+                   matchesSubjectSearch && 
+                   matchesSearch && 
+                   matchesCollege;
         });
 
-    // Apply sorting
-    if (sortType === 'high-low') {
-        filteredBooks.sort((a, b) => b.textbook_price - a.textbook_price);
-    } else if (sortType === 'low-high') {
-        filteredBooks.sort((a, b) => a.textbook_price - b.textbook_price);
-    }   
-        setDisplayedBooks(filteredBooks);
-    }, [minPrice, maxPrice, textbooks, selectedConditions, conditionSearch, sortType, selectedCollege, searchQuery]);
+        // Apply sorting
+        if (sortType === 'high-low') {
+            filteredBooks.sort((a, b) => b.textbook_price - a.textbook_price);
+        } else if (sortType === 'low-high') {
+            filteredBooks.sort((a, b) => a.textbook_price - b.textbook_price);
+        }
 
-    const handleConditionChange = (condition, isChecked) => {
-        setSelectedConditions(prev => 
-            isChecked 
-                ? [...prev, condition] 
-                : prev.filter(c => c !== condition)
+        setDisplayedBooks(filteredBooks);
+    }, [minPrice, maxPrice, textbooks, selectedCourseSubjects, courseSubjectSearch, 
+        sortType, selectedCollege, searchQuery]);
+
+    const handleCourseSubjectChange = (subject, isChecked) => {
+        setSelectedCourseSubjects(prev => 
+            isChecked ? [...prev, subject] : prev.filter(s => s !== subject)
         );
     };
 
@@ -93,8 +99,7 @@ function Home() {
 
     return (
         <>
-            <Head searchQuery={searchQuery}
-                  onSearchChange={setSearchQuery} />
+            <Head searchQuery={searchQuery} onSearchChange={setSearchQuery} />
             <div className="main-container">
                 <div className="filter-section">
                     <FilterBar 
@@ -103,13 +108,12 @@ function Home() {
                         minPrice={minPrice}
                         maxPrice={maxPrice}
                         onSortChange={handleSortChange}
-                        onConditionChange={handleConditionChange}
-                        onConditionSearchChange={setConditionSearch}
-                        selectedConditions={selectedConditions}
-                        conditionSearch={conditionSearch}
+                        onCourseSubjectChange={handleCourseSubjectChange}
+                        onCourseSubjectSearchChange={setCourseSubjectSearch}
+                        selectedCourseSubjects={selectedCourseSubjects}
+                        courseSubjectSearch={courseSubjectSearch}
                         onCollegeChange={handleCollegeChange}
                         selectedCollege={selectedCollege}
-
                         courses={textbooks.reduce((acc, textbook) => {
                             if (!acc.find(c => c.id === textbook.course_id)) {
                                 acc.push({
@@ -120,9 +124,9 @@ function Home() {
                             }
                             return acc;
                         }, [])}
-                        
                     />
                 </div>
+                
                 <div className="book-list-section">
                     {isLoading ? (
                         <p>Loading textbooks...</p>
@@ -142,4 +146,3 @@ function Home() {
 }
 
 export default Home;
-
