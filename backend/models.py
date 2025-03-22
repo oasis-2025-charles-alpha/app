@@ -41,8 +41,8 @@ class Textbook(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     textbook_name = db.Column(db.String(100), nullable=False)
     textbook_author = db.Column(db.String(100), nullable=False)
-    textbook_condition = db.Column(db.String(20), nullable=False)
-    textbook_image = db.Column(db.String(255), nullable=False)
+   # textbook_condition = db.Column(db.String(20), nullable=False)
+   # textbook_image = db.Column(db.String(255), nullable=False)
     textbook_price = db.Column(db.Float, nullable=False)
     textbook_image = db.Column(db.String(800), nullable=True)
 
@@ -67,7 +67,7 @@ class College(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     college_name = db.Column(db.String(80), nullable=False)
 
-    course = db.relationship("Course", backref="courses", lazy=True)
+    course = db.relationship("Course", backref="college", lazy=True)
 
     def to_json(self):
         return {
