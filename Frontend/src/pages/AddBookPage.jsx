@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRefresh } from "../context/RefreshContext";
 
 const AddBookPage = () => {
     const navigate = useNavigate();
+    const { setRefreshTrigger } = useRefresh();
 
     const [formData, setFormData] = useState({
         textbookName: "",
@@ -62,6 +64,15 @@ const AddBookPage = () => {
             let professorId = formData.professorId;
             let courseId = formData.courseId;
             let collegeName = formData.collegeName;
+
+            const courseSubject = formData.courseSubject.toUpperCase();
+
+            if (!formData.courseId && formData.courseNumber) {
+                if (!/^\d{4}$/.test(formData.courseNumber)) {
+                    alert("Course number must be 4 digits");
+                    return;
+                }
+            }
 
             // College creation logic
             if (!collegeName) {
@@ -150,6 +161,7 @@ const AddBookPage = () => {
             }
 
             alert("Textbook added successfully!");
+            setRefreshTrigger(prev => !prev); // Trigger filter refresh
             navigate("/");
         } catch (error) {
             console.error("Error:", error);
@@ -211,16 +223,25 @@ const AddBookPage = () => {
                     <input 
                         type="text" 
                         name="courseSubject" 
-                        placeholder="Subject" 
-                        value={formData.courseSubject} 
-                        onChange={handleChange} 
+                        placeholder="Subject (e.g., CS)" 
+                        value={formData.courseSubject}
+                        onChange={(e) => setFormData({
+                            ...formData,
+                            courseSubject: e.target.value.toUpperCase()
+                        })}
                     />
                     <input 
-                        type="number" 
+                        type="text" 
                         name="courseNumber" 
-                        placeholder="Number" 
-                        value={formData.courseNumber} 
-                        onChange={handleChange} 
+                        placeholder="Number (4 digits)" 
+                        value={formData.courseNumber}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === '' || (val.length <= 4 && /^\d*$/.test(val))) {
+                                setFormData({...formData, courseNumber: val});
+                            }
+                        }}
+                        maxLength={4}
                     />
                 </div>
 

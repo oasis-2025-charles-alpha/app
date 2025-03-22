@@ -134,7 +134,7 @@ def delete_college(college_id):
 # Get all courses
 @app.route("/courses", methods=["GET"])
 def get_courses():
-    courses = Course.query.all()
+    courses = Course.query.order_by(Course.course_subject.asc()).all()
     json_courses = [course.to_json() for course in courses]
     return jsonify({"courses": json_courses})
 
@@ -145,6 +145,13 @@ def create_course():
     course_subject = data.get("courseSubject")
     course_number = data.get("courseNumber")
     college_id = data.get("collegeId")
+
+    #limit couse number to 4 digit long
+    if not course_number.isdigit() or len(course_number) != 4:
+        return (jsonify({"message": "Course number must be 4 digits"}), 400)
+
+    if not course_subject or not college_id:
+        return (jsonify({"message": "Missing required fields"}), 400)
 
     if not course_number or not course_subject:
         return (
@@ -176,14 +183,28 @@ def create_course():
 @app.route("/update_course/<int:course_id>", methods=["PATCH"])
 def update_course(course_id):
     course = db.session.get(Course, course_id)
-
     if not course:
         return jsonify({"message": "Course not found"}), 404
     
     data = request.json
-    course.course_subject = data.get("courseSubject", course.course_subject)
-    course.course_number = data.get("courseNumber", course.course_number)
-    course.college_id = data.get("courseId", course.college_id)
+    
+    # Update course subject with capitalization
+    if 'courseSubject' in data:
+        course.course_subject = data['courseSubject'].upper()
+    
+    # Validate and update course number
+    if 'courseNumber' in data:
+        course_number = str(data['courseNumber'])
+        if not course_number.isdigit() or len(course_number) != 4:
+            return jsonify({"message": "Course number must be 4 digits"}), 400
+        course.course_number = course_number
+    
+    # Validate and update college
+    if 'collegeId' in data:
+        college = db.session.get(College, data['collegeId'])
+        if not college:
+            return jsonify({"message": "College not found"}), 400
+        course.college_id = data['collegeId']
 
     try:
         db.session.commit()

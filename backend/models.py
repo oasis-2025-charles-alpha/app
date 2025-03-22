@@ -6,11 +6,16 @@ class Course(db.Model):
     __tablename__ = "courses"
     id = db.Column(db.Integer, primary_key=True)
     course_subject = db.Column(db.String(10), nullable=False)
-    course_number = db.Column(db.String(10), nullable=False)
-    college_id = db.Column(db.Integer, db.ForeignKey("college.id"), nullable=True)
+    course_number = db.Column(db.String(4), nullable=False)
+    college_id = db.Column(db.Integer, db.ForeignKey("colleges.id"), nullable=True)
 
     # Relationship to Textbook (one-to-many)
     textbooks = db.relationship("Textbook", backref="course", lazy=True)
+
+    def __init__(self, **kwargs):
+        # Automatically capitalize course subject
+        kwargs['course_subject'] = kwargs.get('course_subject', '').upper()
+        super(Course, self).__init__(**kwargs)
 
     def to_json(self):
         return {
@@ -63,11 +68,11 @@ class Textbook(db.Model):
         }
     
 class College(db.Model):
-    __tablename__ = "college"
+    __tablename__ = "colleges"
     id = db.Column(db.Integer, primary_key=True)
     college_name = db.Column(db.String(80), nullable=False)
 
-    course = db.relationship("Course", backref="college", lazy=True)
+    course = db.relationship("Course", backref="college_rel", lazy=True)
 
     def to_json(self):
         return {

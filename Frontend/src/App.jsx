@@ -9,11 +9,13 @@ import Login from './components/Login';
 import Signup from './components/Login';
 import Protected from './components/Login';
 import Navbar from './components/Login';
+import { RefreshProvider } from './context/RefreshContext';
 
 
 function App() {
   return (
     <>
+    <RefreshProvider>
     <LikesProvider>
       <Router>
         <Routes>
@@ -27,6 +29,7 @@ function App() {
         </Routes>
       </Router>
     </LikesProvider>
+    </RefreshProvider>
     </>
   )
 }

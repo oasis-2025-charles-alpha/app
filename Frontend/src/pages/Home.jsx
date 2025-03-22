@@ -4,6 +4,7 @@ import FilterBar from "../components/FilterBar";
 import Head from "../Head";
 import "./Home.css";
 import axios from 'axios';
+import { useRefresh } from '../context/RefreshContext';
 
 function Home() {
     const [textbooks, setTextbooks] = useState([]);
@@ -20,29 +21,31 @@ function Home() {
     const [maxPrice, setMaxPrice] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
 
+    const { refreshTrigger } = useRefresh();
+
     // Fetch textbooks from backend
     useEffect(() => {
         const fetchTextbooks = async () => {
             try {
                 const response = await axios.get('http://127.0.0.1:5000/textbooks');
+                console.log('Textbooks data:', response.data);
                 setTextbooks(response.data.textbooks);
                 setFetchError(null);
             } catch (error) {
                 setFetchError(error.message);
-                console.error("Error fetching textbooks:", error);
+                console.error("Full error details:", error.response?.data || error.message);
             } finally {
                 setIsLoading(false);
             }
         };
         fetchTextbooks();
-    }, []);
+    }, [refreshTrigger]);
 
     // Filter and sort books
     useEffect(() => {
         let filteredBooks = [...textbooks];
 
         filteredBooks = filteredBooks.filter(book => {
-            // Course subject filters
             const matchesCourseSubjects = selectedCourseSubjects.length === 0 || 
                 selectedCourseSubjects.some(subject => 
                     book.course_subject.toLowerCase() === subject.toLowerCase()
@@ -51,16 +54,13 @@ function Home() {
             const matchesSubjectSearch = book.course_subject.toLowerCase()
                 .includes(courseSubjectSearch.toLowerCase().trim());
             
-            // College filter
             const matchesCollege = !selectedCollege || 
                 book.college_name === selectedCollege;
 
-            // Price range
             const price = Number(book.textbook_price);
             const meetsMin = !minPrice || price >= Number(minPrice);
             const meetsMax = !maxPrice || price <= Number(maxPrice);
 
-            // General search
             const matchesSearch = searchQuery.toLowerCase() === '' || 
                 book.textbook_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 book.textbook_author.toLowerCase().includes(searchQuery.toLowerCase());
@@ -72,7 +72,6 @@ function Home() {
                    matchesCollege;
         });
 
-        // Apply sorting
         if (sortType === 'high-low') {
             filteredBooks.sort((a, b) => b.textbook_price - a.textbook_price);
         } else if (sortType === 'low-high') {
@@ -114,16 +113,6 @@ function Home() {
                         courseSubjectSearch={courseSubjectSearch}
                         onCollegeChange={handleCollegeChange}
                         selectedCollege={selectedCollege}
-                        courses={textbooks.reduce((acc, textbook) => {
-                            if (!acc.find(c => c.id === textbook.course_id)) {
-                                acc.push({
-                                    id: textbook.course_id,
-                                    course_subject: textbook.course_subject,
-                                    course_number: textbook.course_number
-                                });
-                            }
-                            return acc;
-                        }, [])}
                     />
                 </div>
                 

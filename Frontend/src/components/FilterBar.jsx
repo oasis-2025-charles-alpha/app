@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useRefresh } from '../context/RefreshContext';
 
 function FilterBar({ 
     onSortChange, 
@@ -14,14 +16,22 @@ function FilterBar({
     maxPrice,
     courses
 }) {
+
+    const { refreshTrigger } = useRefresh();
     const [courseCategories, setCourseCategories] = useState([]);
 
     useEffect(() => {
-        if (courses && courses.length > 0) {
-            const uniqueSubjects = [...new Set(courses.map(course => course.course_subject))];
-            setCourseCategories(uniqueSubjects);
-        }
-    }, [courses]);
+        const fetchCourses = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:5000/courses');
+                const subjects = [...new Set(response.data.courses.map(c => c.courseSubject))];
+                setCourseCategories(subjects.sort());
+            } catch (error) {
+                console.error('Error fetching courses:', error);
+            }
+        };
+        fetchCourses();
+    }, [refreshTrigger]); 
 
     return (
         <div className="filter-container">
