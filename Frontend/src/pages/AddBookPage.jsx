@@ -12,6 +12,8 @@ const AddBookPage = () => {
         courseId: "",
         courseSubject: "",
         courseNumber: "",
+        collegeId: "",
+        collegeName: "",
         professorId: "",
         professorFname: "",
         professorLname: ""
@@ -46,6 +48,24 @@ const AddBookPage = () => {
         try {
             let professorId = formData.professorId;
             let courseId = formData.courseId;
+            let collegeId = formData.collegeId;
+
+            if (!collegeId && formData.collegeName) {
+                const collegeResponse = await fetch("http://127.0.0.1:5000/create_college", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        collegeName: formData.collegeName
+                    })
+                })
+
+                const collegeResult = await collegeResponse.json()
+                if (!collegeResposne.ok) {
+                    alert(collegeResult.message)
+                    return
+                }
+                collegeId = collegeResult.id
+            }
 
             // Create new professor if not selected
             if (!professorId && formData.professorFname && formData.professorLname) {
@@ -73,7 +93,8 @@ const AddBookPage = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         courseSubject: formData.courseSubject,
-                        courseNumber: formData.courseNumber
+                        courseNumber: formData.courseNumber,
+                        collegeId: collegeId
                     })
                 });
 
@@ -131,46 +152,27 @@ const AddBookPage = () => {
             [e.target.name]: e.target.value
         });
     };
-
     return (
         <div className="add-book-container">
-            <button 
-                onClick={() => navigate('/')}
-                className="go-back-btn">
+            <button onClick={() => navigate('/')} className="go-back-btn">
                 ← Go Back to Main Page
             </button>
             <h1>Add New Textbook</h1>
             <form onSubmit={onSubmit} className="add-book-form">
                 <div className="form-group">
                     <label>Textbook Name:</label>
-                    <input
-                        type="text"
-                        name="textbookName"
-                        value={formData.textbookName}
-                        onChange={handleChange}
-                        required
-                    />
+                    <input type="text" name="textbookName" value={formData.textbookName} onChange={handleChange} required />
                 </div>
 
                 <div className="form-group">
                     <label>Author:</label>
-                    <input
-                        type="text"
-                        name="textbookAuthor"
-                        value={formData.textbookAuthor}
-                        onChange={handleChange}
-                        required
-                    />
+                    <input type="text" name="textbookAuthor" value={formData.textbookAuthor} onChange={handleChange} required />
                 </div>
 
                 <div className="form-group">
                     <label>Condition:</label>
-                    <select
-                        name="textbookCondition"
-                        value={formData.textbookCondition}
-                        onChange={handleChange}
-                        required
-                    >
+                    <select name="textbookCondition" value={formData.textbookCondition} onChange={handleChange} required>
+                        <option value="">Select Condition</option>
                         <option value="New">New</option>
                         <option value="Good">Good</option>
                         <option value="Fair">Fair</option>
@@ -194,6 +196,11 @@ const AddBookPage = () => {
                 </div>
 
                 <div className="form-group">
+                    <label>College (for course):</label>
+                    <input type="text" name="collegeName" placeholder="Enter College Name" value={formData.collegeName} onChange={handleChange} />
+                </div>
+
+                <div className="form-group">
                     <label>Professor:</label>
                     <select name="professorId" value={formData.professorId} onChange={handleChange}>
                         <option value="">Select Professor</option>
@@ -210,7 +217,7 @@ const AddBookPage = () => {
 
                 <div className="form-group">
                     <label>Price:</label>
-                    <input type="number" step="0.01" name="textbookPrice" value={formData.textbookPrice} onChange={handleChange} required />
+                    <input type="number" step="0.01" min="0" name="textbookPrice" value={formData.textbookPrice} onChange={handleChange} required />
                 </div>
 
                 <button type="submit" className="submit-btn">Add Textbook</button>

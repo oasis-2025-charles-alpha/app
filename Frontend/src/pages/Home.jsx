@@ -41,17 +41,6 @@ function Home() {
 
     useEffect(() => {
         let filteredBooks = [...textbooks];
-        
-        // const fetchTextbook = async () => {
-        //     try {
-        //     const response = await axios.get('http://127.0.0.1:5000/textbooks');
-        //     setTextbook(response.data)
-        //     } catch (error) {
-        //         console.error('Error fetching data:', error);
-        //     }
-        // }
-
-        // fetchData()
 
         // Combine checkbox and search filters
         filteredBooks = filteredBooks.filter(book => {

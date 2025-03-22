@@ -1,10 +1,8 @@
 from flask import request, jsonify
 from config import app, db, jwt
 from models import Textbook, Professor, Course, User, College
-from sqlalchemy import text
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
-import bcrypt
 
 
 # Professor commands
