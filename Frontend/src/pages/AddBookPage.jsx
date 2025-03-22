@@ -20,26 +20,40 @@ const AddBookPage = () => {
 
     const [courses, setCourses] = useState([]);
     const [professors, setProfessors] = useState([]);
+    const collegeOptions = [
+        "Khoury College",
+        "School of Law",
+        "College of Arts, Media and Design",
+        "D’Amore-McKim School of Business",
+        "College of Engineering",
+        "College of Science",
+        "College of Professional Studies",
+        "Bouvé College of Health Sciences",
+        "College of Social Sciences and Humanities"
+    ];
 
     // Fetch courses and professors
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const coursesResponse = await fetch("http://127.0.0.1:5000/courses");
-                const professorsResponse = await fetch("http://127.0.0.1:5000/professors");
+                const [coursesRes, professorsRes] = await Promise.all([
+                    fetch("http://127.0.0.1:5000/courses"),
+                    fetch("http://127.0.0.1:5000/professors")
+                ]);
 
-                const coursesData = await coursesResponse.json();
-                const professorsData = await professorsResponse.json();
+                const coursesData = await coursesRes.json();
+                const professorsData = await professorsRes.json();
 
                 setCourses(coursesData.courses);
                 setProfessors(professorsData.professors);
+                setColleges(collegesData.colleges);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
-
         fetchData();
     }, []);
+
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -47,23 +61,26 @@ const AddBookPage = () => {
         try {
             let professorId = formData.professorId;
             let courseId = formData.courseId;
-            let collegeId = formData.collegeId;
+            let collegeName = formData.collegeName;
 
             // College creation logic
-            if (!collegeId && formData.collegeName) {
-                const collegeResponse = await fetch("http://127.0.0.1:5000/create_college", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json"},
-                    body: JSON.stringify({ collegeName: formData.collegeName })
-                });
-
-                const collegeResult = await collegeResponse.json();
-                if (!collegeResponse.ok) {
-                    alert(collegeResult.message);
-                    return;
-                }
-                collegeId = collegeResult.id;
+            if (!collegeName) {
+                alert("Please select a college");
+                return;
             }
+
+            const collegeResponse = await fetch("http://127.0.0.1:5000/create_college", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ collegeName })
+            });
+
+            const collegeResult = await collegeResponse.json();
+            if (!collegeResponse.ok) {
+                alert(collegeResult.message);
+                return;
+            }
+            const collegeId = collegeResult.id;
 
             // Professor creation logic
             if (!professorId && formData.professorFname && formData.professorLname) {
@@ -208,15 +225,21 @@ const AddBookPage = () => {
                 </div>
 
                 <div className="form-group">
-                    <label>College (for course):</label>
-                    <input 
-                        type="text" 
-                        name="collegeName" 
-                        placeholder="Enter College Name" 
-                        value={formData.collegeName} 
-                        onChange={handleChange} 
-                    />
-                </div>
+                <label>College:</label>
+                <select 
+                    name="collegeName" 
+                    value={formData.collegeName} 
+                    onChange={handleChange}
+                    required
+                >
+                    <option value="">Select College</option>
+                    {collegeOptions.map(college => (
+                        <option key={college} value={college}>
+                            {college}
+                        </option>
+                    ))}
+                </select>
+            </div>
 
                 <div className="form-group">
                     <label>Professor:</label>
