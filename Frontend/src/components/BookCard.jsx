@@ -17,13 +17,14 @@ function BookCard({ book }) {
                 <div className="price-condition">
                     <span className="book-price">${book.textbook_price}</span>
                 </div>
+                <div className="professor-info">
+                    Professor: {book.professor_fname} {book.professor_lname}
+                </div>
                 <div className="course-college-info">
                     <span className="course-info">{book.course_subject} {book.course_number}</span>
                     <span className="college-name">{book.college_name}</span>
                 </div>
-                <div className="professor-info">
-                    Professor: {book.professor_fname} {book.professor_lname}
-                </div>
+
             </div>
         </div>
     );
