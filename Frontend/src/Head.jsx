@@ -1,16 +1,21 @@
 import React from "react";
-import { Link } from "react-router-dom"; // Import Link
-import { useLikes } from "./context/LikesContext";
+import { Link } from "react-router-dom";
+import { useLikes } from './context/LikesContext'; // Correct import path
+
 
 function Head({ isLoggedIn, onLogout, searchQuery, onSearchChange }) {
-  const { likedBooks } = useLikes();
+  const { likedBooks, resetLikedBooks } = useLikes(); // Access resetLikedBooks
+
+  const handleLogout = () => {
+    resetLikedBooks(); // Clear likedBooks
+    onLogout(); // Call the onLogout function passed from the parent component
+  };
 
   return (
     <header className="flex items-center justify-between w-full p-4 bg-gray-800 text-white">
       <nav className="flex items-center gap-4 flex-1">
-        {/* Link to home page */}
         <div className="logo font-bold text-xl">
-          <Link to="/">Xiaobin's BookStore</Link> {/* Link to home page */}
+          <Link to="/">Xiaobin's BookStore</Link>
         </div>
         <form action="#" id="search-form">
           <input
@@ -23,7 +28,6 @@ function Head({ isLoggedIn, onLogout, searchQuery, onSearchChange }) {
         </form>
       </nav>
 
-      {/* Link to Add Book page */}
       <Link to="/add-book" className="add-book-btn bg-blue-500 p-2 rounded">
         + Add Book +
       </Link>
@@ -35,7 +39,7 @@ function Head({ isLoggedIn, onLogout, searchQuery, onSearchChange }) {
           </Link>
           {isLoggedIn ? (
             <button
-              onClick={onLogout}
+              onClick={handleLogout} // Use handleLogout instead of onLogout
               className="logout-btn bg-red-500 p-2 rounded"
             >
               Log Out

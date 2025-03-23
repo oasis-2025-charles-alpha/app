@@ -1,8 +1,9 @@
+// src/App.js
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Sell from "./pages/Sell";
-import { LikesProvider } from "./context/LikesContext"; // Import LikesProvider
+import { LikesProvider } from "./context/LikesContext";
 import LikesList from "./pages/LikesList";
 import AddBookPage from "./pages/AddBookPage";
 import Login from "./components/Login";
@@ -37,7 +38,6 @@ function App() {
     <RefreshProvider>
       <LikesProvider>
         <Router>
-          {/* Render Head only once here */}
           <Head
             isLoggedIn={isLoggedIn}
             onLogout={handleLogout}
@@ -51,11 +51,11 @@ function App() {
             <Route path="/add-book" element={<AddBookPage />} />
             <Route
               path="/login"
-              element={<Login onLogin={handleLogin} />} // Pass handleLogin to Login
+              element={<Login onLogin={handleLogin} />}
             />
             <Route
               path="/signup"
-              element={<Signup onLogin={handleLogin} />} // Pass handleLogin to Signup
+              element={<Signup onLogin={handleLogin} />}
             />
             <Route
               path="/protected"
@@ -63,7 +63,7 @@ function App() {
                 isLoggedIn ? (
                   <ProtectedPage />
                 ) : (
-                  <Navigate to="/login" replace /> // Redirect to login if not logged in
+                  <Navigate to="/login" replace />
                 )
               }
             />
