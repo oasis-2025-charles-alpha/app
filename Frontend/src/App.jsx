@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
@@ -46,9 +45,24 @@ function App() {
           />
           <Routes>
             <Route path="/" element={<Home searchQuery={searchQuery} />} />
-            <Route path="/sell" element={<Sell />} />
-            <Route path="/likes" element={<LikesList />} />
-            <Route path="/add-book" element={<AddBookPage />} />
+            <Route
+              path="/sell"
+              element={
+                isLoggedIn ? <Sell /> : <Navigate to="/login" replace />
+              }
+            />
+            <Route
+              path="/likes"
+              element={
+                isLoggedIn ? <LikesList /> : <Navigate to="/login" replace />
+              }
+            />
+            <Route
+              path="/add-book"
+              element={
+                isLoggedIn ? <AddBookPage /> : <Navigate to="/login" replace />
+              }
+            />
             <Route
               path="/login"
               element={<Login onLogin={handleLogin} />}
