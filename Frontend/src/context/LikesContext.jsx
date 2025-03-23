@@ -33,12 +33,7 @@ export function LikesProvider({ children }) {
             {children}
         </LikesContext.Provider>
     );
+
 }
 
-export const useLikes = () => {
-    const context = useContext(LikesContext);
-    if (!context) {
-        throw new Error('useLikes must be used within a LikesProvider');
-    }
-    return context;
-};
+export const useLikes = () => useContext(LikesContext);
